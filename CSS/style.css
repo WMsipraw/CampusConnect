@@ -20,14 +20,22 @@
     line-height: 1;
 } */
 
+.user-actions{
+    gap: 10px;
+    display: flex;
+    align-items: center;
+    /* border: 1px solid red; */
+}
+
+
 .register-btn{
     transition: 0.4s;
-    display: inline-block;
-    background-color: rgb(127, 144, 255);
-    /* color: white; */
+    /* display: inline-block; */
+    background-color:rgb(108, 114, 155);
+    color: white;
     padding: 5px 30px;
     border-radius: 10px;
-    text-decoration: none;
+    /* text-decoration: none; */
     /* transform: translateY(-4px); */
     /* box-shadow: 0 4px 10px rgb(0, 0, 0.5); */
 }
@@ -69,8 +77,8 @@
 .hero-btn{
     transition: 0.4s;
     display: inline-block;
-    background-color: rgb(127, 144, 255);
-    color: black;
+    background-color:rgb(108, 114, 155);
+    color: white;
     padding: 10px 18px;
     border-radius: 10px;
     text-decoration: none;
@@ -222,7 +230,7 @@
     font-weight: 100;
 }
 .fields input:focus, .fields select:focus{
-    border-color: rgb(127, 144, 255);;
+    border-color: rgb(127, 144, 255);
     box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
 }
 
@@ -268,3 +276,66 @@
     box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
 }
 
+nav .user-actions input{
+    border-radius: 10px;
+    font-size: 14px;
+    border-color: rgb(187, 188, 196);
+    /* box-shadow: 3px 10px 25px rgba(0,0,0,0.3); */
+    padding: 6px 10px;
+    /* outline: ; */
+    transition: all 0.3s ease;
+    outline: none;
+}
+
+.logout-btn{
+    border-radius: 10px;
+    padding: 6px 20px;
+    background-color:rgb(108, 114, 155);
+    transition: 0.4s;
+    color: white;  
+    border: none; 
+}
+
+.logout-btn:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgb(0, 0, 0, 0.5) ;   
+}
+
+.user-profile{
+    padding: 6px 10px;
+}
+
+.welcome-section{
+    background-color: rgb(132, 180, 202);
+    text-align: center;
+    padding: 40px 20px;
+    /* margin-top: 20px; */
+}
+
+.welcome-section h1{
+    font-size: 50px;
+    /* font-weight: 100; */
+    margin-bottom: 20px;
+}
+
+.welcome-section p{
+    font-size: 18px;
+    line-height: 30px;
+    margin-bottom: 25px;
+}
+
+.explore-btn{
+    transition: 0.4s;
+    /* display: inline-block; */
+    background-color:rgb(108, 114, 155);
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    border: none;
+    /* text-decoration: none; */
+}
+
+.explore-btn:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgb(0, 0, 0, 0.5) ;  
+}
