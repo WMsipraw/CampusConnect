@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Create Request</title>
+
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="create-request-page">
+    <header>
+        <h1>Create Request</h1>
+    </header>
+    <form class="request-form">
+        <label for="title">Title</label>
+        <input id="title" name="title" type="text" placeholder="Enter request title" required>
+        <label for="request-des">Request Description</label>
+        <textarea id="request-des" name="request-des" placeholder="Describe what you want" required></textarea>
+        <label for="categories-dropdown">Categories</label>
+        <select id="categories-dropdown" name="categories-dropdown">
+            <option value="Tutoring">Tutoring</option>
+            <option value="Graphic Design">Graphic Design</option>
+            <option value="Programming Help">Programming Help</option>
+            <option value="Laptop Repair">Laptop Repair</option>
+            <option value="Photography">Photography</option>
+            <option value="Other">Other</option>
+        </select>
+        <label for="deadline">Deadline</label>
+        <input id="deadline" name="deadline" type="date" required>
+        <label for="budget">Budget</label>
+        <input id="budget" name="budget" type="number" required placeholder="Enter expected budget">
+        <button class="submit-request-btn" type="submit">Submit Request</button>
+    </form>
+</body>
+</html>

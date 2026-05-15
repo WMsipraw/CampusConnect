@@ -178,10 +178,15 @@
 } */
 
 .register{
+    /* border-radius: 10px; */
     display: flex;
     flex-direction: column;
     align-items: center;
     min-height: 100vh;
+    /* padding: 40px;
+    width: 500px; */
+    /* box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    background-color: white; */
 }
 
 /* .card{
@@ -213,7 +218,7 @@
     gap: 10px;
 }
 
-.fields input, .fields select{
+.fields input{
 
     border: 2px solid  gray;
     border-radius: 8px;
@@ -229,7 +234,7 @@
     font-size: larger;
     font-weight: 100;
 }
-.fields input:focus, .fields select:focus{
+.fields input:focus{
     border-color: rgb(127, 144, 255);
     box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
 }
@@ -298,7 +303,8 @@ nav .user-actions input{
 
 .logout-btn:hover{
     transform: translateY(-4px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ;   
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ; 
+    background-color: rgb(68, 89, 89);  
 }
 
 .user-profile{
@@ -337,7 +343,8 @@ nav .user-actions input{
 
 .explore-btn:hover{
     transform: translateY(-4px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ;  
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ; 
+    background-color: rgb(68, 89, 89); 
 }
 
 .services-section{
@@ -389,7 +396,8 @@ nav .user-actions input{
 
 .service-card button:hover{
     transform: translateY(-4px);
-    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ;  
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ;
+    background-color: rgb(68, 89, 89);  
 }
 
 .service-card:hover{
@@ -443,6 +451,7 @@ nav .user-actions input{
 .request-card button:hover{
     transform: translateY(-4px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ; 
+    background-color: rgb(68, 89, 89);
 }
 
 footer{
@@ -455,4 +464,72 @@ footer{
 footer p{
     font-size: 14px;
     letter-spacing: 0.5px;
+}
+
+.create-request-page{
+    display: flex;
+    flex-direction: column;
+    align-items: center ;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.request-form{
+    /* background-color: rgb(226, 217, 217); */
+    /* border-radius: 10px; */
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 40px;
+    width: 500px; 
+    /* box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+    background-color: white;  */
+    /* text-align: center; */
+    /* background-color: white;
+    box-shadow: 3 10px 25px rgba(0,0,0,0.3);
+    padding: 40px;
+    width:  500px;
+    /* height: 400px; */
+    /* margin-left: 350px; */
+    /* border-radius: 20px; */
+    /* padding-left: 40px; */
+    /* margin-butto: 40px; */ 
+}
+
+.request-form input,.request-form select, .request-form textarea{
+    border: 2px solid  gray;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    transition: 0.4s;
+    outline: none;
+}
+
+.request-form label{
+    margin-top: 8px;
+    font-size: larger;
+    font-weight: 100;
+}
+
+.request-form input:focus,.request-form select:focus, .request-form textarea:focus{
+    border-color: rgb(127, 144, 255);
+    box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
+}
+
+.request-form button{
+    font-size: large;
+    cursor: pointer;
+    background-color:rgb(108, 114, 155);
+    border: none;
+    color: white;
+    padding: 10px 18px;
+    border-radius: 10px;
+    transition: 0.3s;
+}
+
+.request-form button:hover{
+    background-color: rgb(68, 89, 89);
+    transform: translateY(-4px); 
+    box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
 }
