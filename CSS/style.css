@@ -625,3 +625,78 @@ footer p{
     transform: translateY(-4px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
+
+
+.profile-page{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    padding: 40px 20px;
+}
+
+.profile-container{
+    width: 700px;
+    padding: 20px 0;
+}
+
+.profile-header h1{
+    font-size: 38px;
+    font-weight: 100;
+    margin-bottom: 15px;
+}
+
+.profile-header p{
+    font-size: 18px;
+    line-height: 1.7;
+    color: rgb(90, 90, 90);
+    margin-bottom: 35px;
+}
+
+.profile-info{
+    border-top: 1px solid rgb(220,220,220);
+    padding-top: 25px;
+}
+
+.profile-info p{
+    font-size: 18px;
+    margin-bottom: 18px;
+    color: rgb(70,70,70);
+}
+
+.profile-info strong{
+    color: black;
+}
+
+.profile-activity{
+    margin-top: 40px;
+}
+
+.profile-activity h2{
+    font-size: 28px;
+    font-weight: 100;
+    margin-bottom: 25px;
+}
+
+.activity-list{
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+.activity-item{
+    padding: 20px;
+    border-radius: 10px;
+    background-color: rgb(226, 217, 217);
+    transition: 0.4s;
+}
+
+.activity-item p{
+    font-size: 17px;
+    color: rgb(60,60,60);
+}
+
+.activity-item:hover{
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.25);
+}
