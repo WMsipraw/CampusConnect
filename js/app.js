@@ -218,8 +218,12 @@ if (requestsListContainer) {
 
             activeRequests = await response.json();
 
-            
-            activeRequests.sort((a, b) => Number(b.id) - Number(a.id));
+
+            activeRequests.forEach((req, idx) => {
+                req.seq = idx;
+            });
+
+            activeRequests.sort((a, b) => b.seq - a.seq);
             if (sortNewestBtn) setActiveSortButton(sortNewestBtn);
 
             renderRequests(activeRequests);
@@ -240,20 +244,17 @@ if (requestsListContainer) {
 
         requestsArray.forEach(req => {
             const card = document.createElement("div");
-            card.className = "service-card"; 
+            card.className = "service-card";
 
             card.innerHTML = `
                 <h3>${escapeHTML(req.title)}</h3>
                 <p class="request-desc">${escapeHTML(req.description)}</p>
-                
-                <!-- Clean meta container with class instead of inline styles -->
                 <div class="request-meta">
                     <p><strong>Category:</strong> ${req.category}</p>
                     <p><strong>Budget:</strong> Rs. ${req.budget}</p>
                     <p><strong>Deadline:</strong> ${req.deadline}</p>
                     <p><strong>Client:</strong> ${escapeHTML(req.userName)}</p>
                 </div>
-                
                 <button class="contact-btn">Contact Client</button>
             `;
 
@@ -263,7 +264,23 @@ if (requestsListContainer) {
 
     if (sortCategoryBtn) {
         sortCategoryBtn.addEventListener("click", () => {
-            activeRequests.sort((a, b) => a.category.localeCompare(b.category));
+
+            const categoryCounts = {};
+            activeRequests.forEach(req => {
+                categoryCounts[req.category] = (categoryCounts[req.category] || 0) + 1;
+            });
+
+            activeRequests.sort((a, b) => {
+                const countA = categoryCounts[a.category];
+                const countB = categoryCounts[b.category];
+
+                if (countA !== countB) {
+                    return countA - countB;
+                }
+
+                return a.category.localeCompare(b.category);
+            });
+
             setActiveSortButton(sortCategoryBtn);
             renderRequests(activeRequests);
         });
@@ -271,7 +288,7 @@ if (requestsListContainer) {
 
     if (sortNewestBtn) {
         sortNewestBtn.addEventListener("click", () => {
-            activeRequests.sort((a, b) => Number(b.id) - Number(a.id));
+            activeRequests.sort((a, b) => b.seq - a.seq);
             setActiveSortButton(sortNewestBtn);
             renderRequests(activeRequests);
         });
@@ -296,7 +313,6 @@ if (requestsListContainer) {
 
     fetchActiveRequests();
 }
-
 
 
 
