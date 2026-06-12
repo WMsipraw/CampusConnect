@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard - CampusConnect</title>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+<body class="admin-page">
+
+    <nav class="navbar admin-navbar">
+        <div class="logo">
+            CampusConnect <span class="admin-badge">Admin</span>
+        </div>
+        <ul class="nav-links">
+            <li><a href="home.html" class="register-btn">User View</a></li>
+        </ul>
+    </nav>
+
+    <main class="admin-container">
+        
+        <section class="admin-stats">
+            <div class="stat-card">
+                <h3>Total Requests</h3>
+                <p id="stat-total" class="stat-number">0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Average Budget</h3>
+                <p id="stat-avg-budget" class="stat-number">$0</p>
+            </div>
+            <div class="stat-card">
+                <h3>Open Requests</h3>
+                <p id="stat-open-percentage" class="stat-number">0%</p>
+            </div>
+        </section>
+
+        <section id="edit-section" class="card admin-edit-card hidden">
+            <h2>Edit Campus Request</h2>
+            <form id="edit-form" class="fields">
+                <input type="hidden" id="edit-id">
+                
+                <label for="edit-title">Request Title</label>
+                <input type="text" id="edit-title" required placeholder="Enter request title">
+                
+                <label for="edit-description">Description</label>
+                <textarea id="edit-description" required placeholder="Describe what you want"></textarea>
+                
+                <label for="edit-category">Category</label>
+                <select id="edit-category">
+                    <option value="Tutoring">Tutoring</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Programming Help">Programming Help</option>
+                    <option value="Laptop Repair">Laptop Repair</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label for="edit-deadline">Deadline</label>
+                <input type="date" id="edit-deadline" required>
+
+                <label for="edit-budget">Budget ($)</label>
+                <input type="number" id="edit-budget" required placeholder="Enter expected budget">
+
+                <label for="edit-status">Status</label>
+                <select id="edit-status">
+                    <option value="Open">Open</option>
+                    <option value="In Progress">In Progress</option>
+                    <option value="Completed">Completed</option>
+                </select>
+
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">Save Changes</button>
+                    <button type="button" id="cancel-edit" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </section>
+
+        <section class="admin-table-section">
+            <h2>Active Campus Requests</h2>
+            
+            <div id="admin-loading" class="status-message">Loading data...</div>
+            <div id="admin-error" class="status-message error-message hidden">Unable to load requests. Make sure JSON Server is running!</div>
+            
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Title</th>
+                            <th>Category</th>
+                            <th>Budget</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-requests-table">
+
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </main>
+
+    <script src="js/admin.js"></script>
+</body>
+</html>

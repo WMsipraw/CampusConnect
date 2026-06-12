@@ -1,72 +1,78 @@
-const requestForm = document.getElementById("request-form");
+// const requestForm = document.getElementById("request-form");
 
-if(requestForm){
+// if(requestForm){
 
-    requestForm.addEventListener("submit", function(e){
+//     requestForm.addEventListener("submit", function(e){
 
-        e.preventDefault();
+//         e.preventDefault();
 
-        const title = document.getElementById("request-title").value;
+//         const title = document.getElementById("request-title").value;
 
-        const description = document.getElementById("request-description").value;
+//         const description = document.getElementById("request-description").value;
 
-        const category = document.getElementById("request-category").value;
+//         const category = document.getElementById("request-category").value;
 
-        const deadline = document.getElementById("request-deadline").value;
+//         const deadline = document.getElementById("request-deadline").value;
 
-        const budget = document.getElementById("request-budget").value;
+//         const budget = document.getElementById("request-budget").value;
 
-        const requestData = {
-            title,
-            description,
-            category,
-            deadline,
-            budget
-        };
+//         const requestData = {
+//             title,
+//             description,
+//             category,
+//             deadline,
+//             budget
+//         };
 
-        localStorage.setItem(
-            "campusRequest",
-            JSON.stringify(requestData)
-        );
+//         localStorage.setItem(
+//             "campusRequest",
+//             JSON.stringify(requestData)
+//         );
 
-        window.location.href = "home.html";
+//         window.location.href = "home.html";
 
-    });
+//     });
 
-}
+// }
 
-const requestsList = document.getElementById("requests-list");
+// const requestsList = document.getElementById("requests-list");
 
-if(requestsList){
+// if(requestsList){
 
-    const savedRequest = JSON.parse(
-        localStorage.getItem("campusRequest")
-    );
+//     const savedRequest = JSON.parse(
+//         localStorage.getItem("campusRequest")
+//     );
 
-    if(savedRequest){
+//     if(savedRequest){
 
-        const requestCard = document.createElement("div");
+//         const requestCard = document.createElement("div");
 
-        requestCard.classList.add("request-card");
+//         requestCard.classList.add("request-card");
 
-        requestCard.innerHTML = `
+//         requestCard.innerHTML = `
         
-            <h3>${savedRequest.title}</h3>
+//             <h3>${savedRequest.title}</h3>
 
-            <p>${savedRequest.description}</p>
+//             <p>${savedRequest.description}</p>
 
-            <p><strong>Category:</strong> ${savedRequest.category}</p>
+//             <p><strong>Category:</strong> ${savedRequest.category}</p>
 
-            <p><strong>Budget:</strong> ${savedRequest.budget}</p>
+//             <p><strong>Budget:</strong> ${savedRequest.budget}</p>
 
-            <p><strong>Deadline:</strong> ${savedRequest.deadline}</p>
+//             <p><strong>Deadline:</strong> ${savedRequest.deadline}</p>
 
-            <button>Offer Help</button>
+//             <button>Offer Help</button>
 
-        `;
+//         `;
 
-        requestsList.appendChild(requestCard);
+//         requestsList.appendChild(requestCard);
 
-    }
+//     }
 
-}
+// }
+
+// document.getElementById("index").style.display = "none";
+// document.getElementById("home").style.display = "";
+
+
+
