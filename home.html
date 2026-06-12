@@ -86,7 +86,17 @@
     </section> 
     <section class="requests-section">
         <h2>Active Requests</h2>
-        <div class="requests-list" id="requests-list">
+        <div class="requests-header-action">
+            <a href="create-request.html" class="create-request-section-btn">Post a New Request</a>
+            <div class="sort-controls">
+                <span>Sort by:</span>
+                <button id="sort-category" class="sort-btn">Category</button>
+                <button id="sort-newest" class="sort-btn">Newest</button>
+                <button id="sort-budget" class="sort-btn">Budget</button>
+            </div>
+        </div>
+
+        <div class="requests-grid=" id="requests-list">
             <!-- <div class="request-card">
                 <h3>DBMS Assignment Help Needed</h3>
                 <p></p>

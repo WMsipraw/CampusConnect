@@ -1,0 +1,65 @@
+{
+  "users": [
+    {
+      "fullname": "Waqar Mahmood Sipraw",
+      "email": "waqarmehmood599@gmail.com",
+      "universityId": "F24BDOCS1M01467",
+      "password": "waqar2003",
+      "id": "A3S5LLgOdeg"
+    },
+    {
+      "fullname": "Huma Fatima",
+      "email": "fatimahuma57@gmail.com",
+      "universityId": "FA18E1BA004",
+      "password": "huma2000",
+      "id": "qsC0pe0MTWE"
+    }
+  ],
+  "requests": [
+    {
+      "title": "reapairing",
+      "description": "i want my laptop to be repair",
+      "category": "Other",
+      "deadline": "2026-07-15",
+      "budget": 30000,
+      "userId": "A3S5LLgOdeg",
+      "userName": "Waqar Mahmood Sipraw",
+      "status": "Open",
+      "id": "AHDb2yxNphQ"
+    },
+    {
+      "title": "photographer",
+      "description": "i want to hire a professional photographer to cover the events of department's annual Dinner",
+      "category": "Photography",
+      "deadline": "2026-12-07",
+      "budget": 5000,
+      "userId": "qsC0pe0MTWE",
+      "userName": "Huma Fatima",
+      "status": "Open",
+      "id": "53uOy5kuTHU"
+    },
+    {
+      "title": "Book Selling",
+      "description": "i want to sell some fiction novels in good condition at half price",
+      "category": "Other",
+      "deadline": "2026-12-07",
+      "budget": 10000,
+      "userId": "qsC0pe0MTWE",
+      "userName": "Huma Fatima",
+      "status": "Open",
+      "id": "TsSl8-AMZ5k"
+    },
+    {
+      "title": "photography",
+      "description": "i want to hire a photographer for community work",
+      "category": "Photography",
+      "deadline": "2026-12-08",
+      "budget": 1000,
+      "userId": "A3S5LLgOdeg",
+      "userName": "Waqar Mahmood Sipraw",
+      "status": "Open",
+      "id": "DECh56MtcBE"
+    }
+  ],
+  "$schema": "./node_modules/json-server/schema.json"
+}

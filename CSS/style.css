@@ -431,6 +431,81 @@ nav .user-actions input{
     gap: 30px;
 }
 
+.requests-header-action {
+    margin-top: 15px;
+    margin-bottom: 30px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 12px;
+}
+
+.requests-header-action p {
+    font-size: 16px;
+    color: #64748b;
+    margin: 0;
+}
+
+.create-request-section-btn {
+    transition: 0.4s;
+    display: inline-block;
+    background-color: #3b82f6; 
+    color: white;
+    padding: 10px 22px;
+    border-radius: 10px;
+    text-decoration: none;
+    font-weight: 500;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.1);
+}
+
+.create-request-section-btn:hover {
+    background-color: #2563eb; 
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+}
+
+.sort-controls {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 15px;
+}
+
+.sort-controls span {
+    font-size: 14px;
+    color: #64748b;
+    font-weight: 500;
+}
+
+.sort-btn {
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: #475569;
+    padding: 6px 14px;
+    border-radius: 20px; 
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 500;
+    transition: 0.3s;
+}
+
+.sort-btn:hover {
+    background-color: #f1f5f9;
+    border-color: #94a3b8;
+}
+
+.sort-btn.active {
+    background-color: #3b82f6; 
+    border-color: #3b82f6;
+    color: white;
+}
+
+.requests-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr; 
+    gap: 30px;
+    margin-top: 30px;
+}
 .request-card{
     text-align: left;
     transition: 0.4s; 
@@ -919,4 +994,78 @@ footer p{
 
 .admin-navbar .nav-links .register-btn:hover {
     background-color: #2563eb;
+}
+
+
+.request-desc {
+    font-size: 15px;
+    line-height: 1.6;
+    color: #475569;
+    margin-bottom: 20px;
+}
+
+.request-meta {
+    margin: 20px 0;
+    text-align: left;
+    font-size: 15px;
+    color: #64748b; 
+    border-top: 1px solid #e2e8f0; 
+    padding-top: 15px;
+}
+
+.request-meta p {
+    margin: 6px 0; 
+}
+
+.request-meta strong {
+    color: #1e293b;
+}
+
+
+.contact-btn {
+    border: none;
+    cursor: pointer;
+    transition: 0.4s;
+    background-color: #64748b;
+    color: white;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.contact-btn:hover {
+    background-color: #475569; 
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+}
+
+
+.inline-error-text {
+    color: #e74c3c; 
+    display: block;
+    margin-top: 5px;
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.form-alert {
+    padding: 10px;
+    border-radius: 8px;
+    margin-bottom: 15px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.alert-error {
+    background-color: #fadbd8;
+    color: #78281f;
+    border: 1px solid #f5b7b1;
+}
+
+.alert-success {
+    background-color: #d4efdf;
+    color: #145a32;
+    border: 1px solid #abebc6;
 }
