@@ -24,7 +24,7 @@
       "budget": 30000,
       "userId": "A3S5LLgOdeg",
       "userName": "Waqar Mahmood Sipraw",
-      "status": "Open",
+      "status": "Completed",
       "id": "AHDb2yxNphQ"
     },
     {
@@ -46,7 +46,7 @@
       "budget": 10000,
       "userId": "qsC0pe0MTWE",
       "userName": "Huma Fatima",
-      "status": "Open",
+      "status": "Completed",
       "id": "TsSl8-AMZ5k"
     },
     {
@@ -57,7 +57,7 @@
       "budget": 1000,
       "userId": "A3S5LLgOdeg",
       "userName": "Waqar Mahmood Sipraw",
-      "status": "Open",
+      "status": "Completed",
       "id": "DECh56MtcBE"
     }
   ],
@@ -70,7 +70,7 @@
       "providerId": "A3S5LLgOdeg",
       "providerName": "Waqar Mahmood Sipraw",
       "message": "i can buy the full stack but want more 20% off",
-      "status": "Accepted by Client, Pending Admin Approval",
+      "status": "Approved",
       "id": "xfkr0Ck6OkQ"
     },
     {
@@ -81,7 +81,7 @@
       "providerId": "A3S5LLgOdeg",
       "providerName": "Waqar Mahmood Sipraw",
       "message": "i can but the full stack but make me a 20% off more",
-      "status": "Accepted by Client, Pending Admin Approval",
+      "status": "Approved",
       "id": "xSrbwzxz8Kg"
     },
     {
@@ -125,7 +125,7 @@
       "providerId": "A3S5LLgOdeg",
       "providerName": "Waqar Mahmood Sipraw",
       "message": "yes i can",
-      "status": "Accepted by Client, Pending Admin Approval",
+      "status": "Approved",
       "id": "NYfCl1519lc"
     },
     {
@@ -149,7 +149,7 @@
       "providerName": "Huma Fatima",
       "providerEmail": "fatimahuma57@gmail.com",
       "message": "i can do it",
-      "status": "Pending Client Confirmation",
+      "status": "Approved",
       "id": "hQ_JXcOP9I4"
     },
     {
@@ -162,8 +162,24 @@
       "providerName": "Huma Fatima",
       "providerEmail": "fatimahuma57@gmail.com",
       "message": "i will be available on that day",
-      "status": "Pending Client Confirmation",
+      "status": "Approved",
       "id": "2t0C4ncNrE4"
+    }
+  ],
+  "providers": [
+    {
+      "id": "1",
+      "name": "Ali Khan",
+      "email": "alikhan@university.edu",
+      "category": "Tutoring",
+      "availability": "Available Mon-Wed (11 AM - 3 PM)"
+    },
+    {
+      "id": "2",
+      "name": "Zain Ali",
+      "email": "zainali@university.edu",
+      "category": "Laptop Repair",
+      "availability": "Available Thu-Fri (12 PM - 5 PM)"
     }
   ],
   "$schema": "./node_modules/json-server/schema.json"

@@ -22,19 +22,52 @@
         <section class="admin-stats">
             <div class="stat-card">
                 <h3>Total Requests</h3>
-                <p id="stat-total" class="stat-number">0</p>
+                <p id="stat-total-requests" class="stat-number">0</p>
             </div>
             <div class="stat-card">
-                <h3>Average Budget</h3>
-                <p id="stat-avg-budget" class="stat-number">$0</p>
+                <h3>Approved Requests</h3>
+                <p id="stat-approved-requests" class="stat-number">0</p>
             </div>
             <div class="stat-card">
-                <h3>Open Requests</h3>
-                <p id="stat-open-percentage" class="stat-number">0%</p>
+                <h3>Pending Approvals</h3>
+                <p id="stat-pending-approvals" class="stat-number">0</p>
             </div>
         </section>
 
-        <section id="edit-section" class="card admin-edit-card hidden">
+        <div class="admin-action-trigger" style="text-align: left;">
+            <button id="toggle-provider-btn" class="add-provider-trigger-btn">+ Add Verified Provider</button>
+        </div>
+
+        <section id="provider-form-container" class="card admin-edit-card hidden" style="margin-bottom: 40px;">
+            <h2>Add New Verified Campus Provider</h2>
+            <form id="provider-form" class="fields">
+                <label for="provider-name">Provider Full Name</label>
+                <input type="text" id="provider-name" required placeholder="Enter provider's name">
+                
+                <label for="provider-email">Contact Email</label>
+                <input type="email" id="provider-email" required placeholder="Enter provider's email">
+                
+                <label for="provider-category">Category of Expertise</label>
+                <select id="provider-category">
+                    <option value="Tutoring">Tutoring</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Programming Help">Programming Help</option>
+                    <option value="Laptop Repair">Laptop Repair</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Other">Other</option>
+                </select>
+
+                <label for="provider-avail">Availability & Short Description</label>
+                <textarea id="provider-avail" required placeholder="Describe availability (e.g. 'Available Mon-Wed 10 AM - 4 PM')"></textarea>
+
+                <div class="form-actions">
+                    <button type="submit" class="save-btn">Add Provider</button>
+                    <button type="button" id="cancel-provider" class="cancel-btn">Cancel</button>
+                </div>
+            </form>
+        </section>
+
+        <section id="edit-section" class="card admin-edit-card hidden" style="margin-bottom: 40px;">
             <h2>Edit Campus Request</h2>
             <form id="edit-form" class="fields">
                 <input type="hidden" id="edit-id">
@@ -58,7 +91,7 @@
                 <label for="edit-deadline">Deadline</label>
                 <input type="date" id="edit-deadline" required>
 
-                <label for="edit-budget">Budget ($)</label>
+                <label for="edit-budget">Budget (Rs.)</label>
                 <input type="number" id="edit-budget" required placeholder="Enter expected budget">
 
                 <label for="edit-status">Status</label>
@@ -76,10 +109,9 @@
         </section>
 
         <section class="admin-table-section">
-            <h2>Active Campus Requests</h2>
-            
-            <div id="admin-loading" class="status-message">Loading data...</div>
-            <div id="admin-error" class="status-message error-message hidden">Unable to load requests. Make sure JSON Server is running!</div>
+            <h2>Manage Campus Requests</h2>
+            <div id="admin-requests-loading" class="status-message">Loading requests...</div>
+            <div id="admin-requests-error" class="status-message error-message hidden">Unable to load requests.</div>
             
             <div class="table-responsive">
                 <table class="admin-table">
@@ -93,7 +125,52 @@
                         </tr>
                     </thead>
                     <tbody id="admin-requests-table">
+                    </tbody>
+                </table>
+            </div>
+        </section>
 
+        <section class="admin-table-section" style="margin-top: 40px;">
+            <h2>Manage Verified Providers</h2>
+            <div id="admin-providers-loading" class="status-message">Loading providers...</div>
+            <div id="admin-providers-error" class="status-message error-message hidden">Unable to load providers.</div>
+            
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Name</th>
+                            <th>Expertise</th>
+                            <th>Email</th>
+                            <th>Availability</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-providers-table">
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+        <section class="admin-table-section" style="margin-top: 40px;">
+            <h2>Manage Booking Offers</h2>
+            <div id="admin-bookings-loading" class="status-message">Loading bookings...</div>
+            <div id="admin-bookings-error" class="status-message error-message hidden">Unable to load bookings.</div>
+            
+            <div class="table-responsive">
+                <table class="admin-table">
+                    <thead>
+                        <tr>
+                            <th>Request Title</th>
+                            <th>Helper (Provider)</th>
+                            <th>Client</th>
+                            <th>Message</th>
+                            <th>Status</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="admin-bookings-table">
+                        <!-- Dynamic rows -->
                     </tbody>
                 </table>
             </div>

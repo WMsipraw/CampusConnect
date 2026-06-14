@@ -1324,3 +1324,146 @@ a.cancel-btn {
     border-radius: 20px !important;
     box-shadow: 0 8px 25px rgba(0,0,0,0.05) !important;
 }
+
+
+/*  VERIFIED PROVIDER MODAL OVERLAY  */
+
+.modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(30, 41, 59, 0.6); 
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 2000;
+    animation: fadeIn 0.3s ease;
+}
+
+.modal-content {
+    background-color: #ffffff;
+    border-radius: 16px;
+    padding: 30px;
+    width: 500px;
+    box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.15);
+    animation: slideUp 0.3s ease;
+    text-align: center;
+}
+
+.modal-content h2 {
+    font-size: 22px;
+    font-weight: 600;
+    margin-bottom: 10px;
+    color: #1e293b;
+}
+
+.modal-content p {
+    font-size: 15px;
+    color: #64748b;
+    margin-bottom: 20px;
+}
+
+.provider-modal-item {
+    background-color: #f8fafc;
+    border: 1px solid #e2e8f0;
+    border-radius: 10px;
+    padding: 15px;
+    margin-bottom: 15px;
+    text-align: left;
+}
+
+.provider-modal-item h4 {
+    font-size: 16px;
+    font-weight: 600;
+    color: #1e293b;
+    margin-bottom: 4px;
+}
+
+.provider-email-btn {
+    display: inline-block;
+    transition: 0.3s;
+    background-color: #3b82f6;
+    color: white !important;
+    padding: 6px 14px;
+    border-radius: 6px;
+    text-decoration: none !important;
+    font-size: 13px;
+    font-weight: 500;
+    margin-top: 8px;
+}
+
+.provider-email-btn:hover {
+    background-color: #2563eb;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+@keyframes slideUp {
+    from { transform: translateY(20px); opacity: 0; }
+    to { transform: translateY(0); opacity: 1; }
+}
+
+
+/* --- ADMIN PANEL COLLAPSIBLE TRIGGER --- */
+
+.add-provider-trigger-btn {
+    transition: 0.4s;
+    display: inline-block;
+    background-color: #3b82f6; 
+    color: white !important;
+    padding: 10px 22px;
+    border-radius: 20px; 
+    font-size: 15px;
+    font-weight: 500;
+    border: none;
+    cursor: pointer;
+    margin-bottom: 25px;
+    box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.15);
+}
+
+.add-provider-trigger-btn:hover {
+    background-color: #2563eb; 
+    transform: translateY(-4px);
+    box-shadow: 0 6px 15px rgba(37, 99, 235, 0.25);
+}
+
+/* --- UNIFIED FORM INPUTS (SELECT & TEXTAREA) --- */
+
+/* Style all select dropdowns globally to match text inputs perfectly */
+select {
+    border: 2px solid gray;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    transition: 0.4s;
+    outline: none;
+    background-color: #ffffff;
+    box-sizing: border-box !important;
+    font-family: inherit;
+    cursor: pointer;
+}
+
+select:focus {
+    border-color: rgb(127, 144, 255);
+    box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Specific styling for the 'Expiring Soon' Badge */
+.badge-expiring {
+    display: inline-block;
+    background-color: #fadbd8; 
+    color: #c0392b;         
+    font-size: 12px;
+    font-weight: bold;
+    padding: 4px 10px;
+    border-radius: 12px;
+    margin-bottom: 12px;
+    border: 1px solid #f5b7b1;
+    width: fit-content;
+}
