@@ -34,21 +34,61 @@ body {
 }
 
 
-.register-btn{
+/* .login-nav-btn {
     transition: 0.4s;
-    /* display: inline-block; */
+    display: inline-block;
+    border: 2px solid #3b82f6; 
+    color: #3b82f6 !important; 
+    padding: 3px 26px; 
+    border-radius: 10px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.login-nav-btn:hover {
+    background-color: rgba(59, 130, 246, 0.08); 
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(59, 130, 246, 0.15);
+} */
+
+/* .register-btn{
+    transition: 0.4s;
+    display: inline-block;
     background-color: #3b82f6;
     color: white;
     padding: 5px 30px;
     border-radius: 10px;
-    /* text-decoration: none; */
+    text-decoration: none; */
     /* transform: translateY(-4px); */
     /* box-shadow: 0 4px 10px rgb(0, 0, 0.5); */
-}
-.register-btn:hover{
+/* } */
+/* .register-btn:hover{
     transform: translateY(-4px);
     box-shadow: 0 4px 10px rgba(0, 0, 0, 0.5) ;
     background-color: #2563eb;
+} */
+
+
+.nav-links a.login-nav-btn,
+.nav-links a.register-btn {
+    background-color: #3b82f6 !important; 
+    color: #ffffff !important;            
+    padding: 8px 24px !important;        
+    font-size: 16px !important;           
+    font-weight: 500 !important;
+    border-radius: 10px !important;
+    border: none !important;              
+    transition: 0.4s;
+    display: inline-block;
+    text-decoration: none !important;
+}
+
+.nav-links a.login-nav-btn:hover,
+.nav-links a.register-btn:hover {
+    background-color: #2563eb !important; 
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0,0, 0, 0.3);
 }
 
 .nav-links a{
@@ -1068,4 +1108,44 @@ footer p{
     background-color: #d4efdf;
     color: #145a32;
     border: 1px solid #abebc6;
+}
+
+/* Style for textareas globally to match input styles */
+textarea {
+    box-sizing: border-box !important;
+    border: 2px solid gray;
+    border-radius: 8px;
+    padding: 10px;
+    width: 100%;
+    font-size: 16px;
+    transition: 0.4s;
+    outline: none;
+    font-family: inherit; /* Ensures textarea inherits the page font family */
+}
+
+textarea:focus {
+    border-color: rgb(127, 144, 255);
+    box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
+}
+
+/* Contact Client Button (Clean, styled with absolutely no inline CSS) */
+.contact-btn {
+    display: inline-block;
+    transition: 0.4s;
+    background-color: #64748b; /* Steel Slate */
+    color: white !important;
+    padding: 10px 18px;
+    border-radius: 10px;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
+    text-align: center;
+    border: none;
+    cursor: pointer;
+}
+
+.contact-btn:hover {
+    background-color: #475569; /* Darker Slate on hover */
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(0,0,0,0.15);
 }

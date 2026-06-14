@@ -61,5 +61,84 @@
       "id": "DECh56MtcBE"
     }
   ],
+  "bookings": [
+    {
+      "requestId": "TsSl8-AMZ5k",
+      "requestTitle": "Book Selling",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "i can buy the full stack but want more 20% off",
+      "status": "Pending Client Confirmation",
+      "id": "xfkr0Ck6OkQ"
+    },
+    {
+      "requestId": "TsSl8-AMZ5k",
+      "requestTitle": "Book Selling",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "i can but the full stack but make me a 20% off more",
+      "status": "Pending Client Confirmation",
+      "id": "xSrbwzxz8Kg"
+    },
+    {
+      "requestId": "TsSl8-AMZ5k",
+      "requestTitle": "Book Selling",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "yes",
+      "status": "Pending Client Confirmation",
+      "id": "KQWpSurEjQ0"
+    },
+    {
+      "requestId": "TsSl8-AMZ5k",
+      "requestTitle": "Book Selling",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "ok",
+      "status": "Pending Client Confirmation",
+      "id": "_HhScjg6C24"
+    },
+    {
+      "requestId": "53uOy5kuTHU",
+      "requestTitle": "photographer",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "ok",
+      "status": "Pending Client Confirmation",
+      "id": "gDz3CewDqtQ"
+    },
+    {
+      "requestId": "TsSl8-AMZ5k",
+      "requestTitle": "Book Selling",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "yes i can",
+      "status": "Pending Client Confirmation",
+      "id": "NYfCl1519lc"
+    },
+    {
+      "requestId": "TsSl8-AMZ5k",
+      "requestTitle": "Book Selling",
+      "clientId": "qsC0pe0MTWE",
+      "clientName": "Huma Fatima",
+      "providerId": "A3S5LLgOdeg",
+      "providerName": "Waqar Mahmood Sipraw",
+      "message": "yes i can buy them all",
+      "status": "Pending Client Confirmation",
+      "id": "w0f1k7JJXFM"
+    }
+  ],
   "$schema": "./node_modules/json-server/schema.json"
 }
