@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin Dashboard - CampusConnect</title>
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
 <body class="admin-page">
 
@@ -12,9 +12,9 @@
         <div class="logo">
             CampusConnect <span class="admin-badge">Admin</span>
         </div>
-        <ul class="nav-links">
-            <li><a href="home.html" class="register-btn">User View</a></li>
-        </ul>
+        <!-- <ul class="nav-links">
+            <li><a href="index.html#home" class="register-btn">User View</a></li>
+        </ul> -->
     </nav>
 
     <main class="admin-container">
@@ -32,39 +32,6 @@
                 <h3>Pending Approvals</h3>
                 <p id="stat-pending-approvals" class="stat-number">0</p>
             </div>
-        </section>
-
-        <div class="admin-action-trigger" style="text-align: left;">
-            <button id="toggle-provider-btn" class="add-provider-trigger-btn">+ Add Verified Provider</button>
-        </div>
-
-        <section id="provider-form-container" class="card admin-edit-card hidden" style="margin-bottom: 40px;">
-            <h2>Add New Verified Campus Provider</h2>
-            <form id="provider-form" class="fields">
-                <label for="provider-name">Provider Full Name</label>
-                <input type="text" id="provider-name" required placeholder="Enter provider's name">
-                
-                <label for="provider-email">Contact Email</label>
-                <input type="email" id="provider-email" required placeholder="Enter provider's email">
-                
-                <label for="provider-category">Category of Expertise</label>
-                <select id="provider-category">
-                    <option value="Tutoring">Tutoring</option>
-                    <option value="Graphic Design">Graphic Design</option>
-                    <option value="Programming Help">Programming Help</option>
-                    <option value="Laptop Repair">Laptop Repair</option>
-                    <option value="Photography">Photography</option>
-                    <option value="Other">Other</option>
-                </select>
-
-                <label for="provider-avail">Availability & Short Description</label>
-                <textarea id="provider-avail" required placeholder="Describe availability (e.g. 'Available Mon-Wed 10 AM - 4 PM')"></textarea>
-
-                <div class="form-actions">
-                    <button type="submit" class="save-btn">Add Provider</button>
-                    <button type="button" id="cancel-provider" class="cancel-btn">Cancel</button>
-                </div>
-            </form>
         </section>
 
         <section id="edit-section" class="card admin-edit-card hidden" style="margin-bottom: 40px;">
@@ -108,6 +75,7 @@
             </form>
         </section>
 
+        <!-- 1. MANAGE REQUESTS SECTION -->
         <section class="admin-table-section">
             <h2>Manage Campus Requests</h2>
             <div id="admin-requests-loading" class="status-message">Loading requests...</div>
@@ -120,6 +88,7 @@
                             <th>Title</th>
                             <th>Category</th>
                             <th>Budget</th>
+                            <th>Deadline</th> <!-- Task 1: Added Column Header -->
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -130,8 +99,42 @@
             </div>
         </section>
 
+        <!-- 2. MANAGE VERIFIED PROVIDERS (Relocated Add Button Control & Form to Top) -->
         <section class="admin-table-section" style="margin-top: 40px;">
-            <h2>Manage Verified Providers</h2>
+            <div class="table-header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+                <h2>Manage Verified Providers</h2>
+                <button id="toggle-provider-btn" class="add-provider-trigger-btn" style="margin-bottom: 0;">+ Add Verified Provider</button>
+            </div>
+
+            <section id="provider-form-container" class="card admin-edit-card hidden" style="margin-bottom: 40px; border: 1px solid #cbd5e1; box-shadow: none;">
+                <h2>Add New Verified Campus Provider</h2>
+                <form id="provider-form" class="fields">
+                    <label for="provider-name">Provider Full Name</label>
+                    <input type="text" id="provider-name" required placeholder="Enter provider's name">
+                    
+                    <label for="provider-email">Contact Email</label>
+                    <input type="email" id="provider-email" required placeholder="Enter provider's email">
+                    
+                    <label for="provider-category">Category of Expertise</label>
+                    <select id="provider-category">
+                        <option value="Tutoring">Tutoring</option>
+                        <option value="Graphic Design">Graphic Design</option>
+                        <option value="Programming Help">Programming Help</option>
+                        <option value="Laptop Repair">Laptop Repair</option>
+                        <option value="Photography">Photography</option>
+                        <option value="Other">Other</option>
+                    </select>
+
+                    <label for="provider-avail">Availability & Short Description</label>
+                    <textarea id="provider-avail" required placeholder="Describe availability (e.g. 'Available Mon-Wed 10 AM - 4 PM')"></textarea>
+
+                    <div class="form-actions">
+                        <button type="submit" class="save-btn">Add Provider</button>
+                        <button type="button" id="cancel-provider" class="cancel-btn">Cancel</button>
+                    </div>
+                </form>
+            </section>
+
             <div id="admin-providers-loading" class="status-message">Loading providers...</div>
             <div id="admin-providers-error" class="status-message error-message hidden">Unable to load providers.</div>
             
@@ -152,6 +155,7 @@
             </div>
         </section>
 
+        <!-- 3. MANAGE BOOKING OFFERS -->
         <section class="admin-table-section" style="margin-top: 40px;">
             <h2>Manage Booking Offers</h2>
             <div id="admin-bookings-loading" class="status-message">Loading bookings...</div>
@@ -170,7 +174,6 @@
                         </tr>
                     </thead>
                     <tbody id="admin-bookings-table">
-                        <!-- Dynamic rows -->
                     </tbody>
                 </table>
             </div>
@@ -178,6 +181,6 @@
 
     </main>
 
-    <script src="js/admin.js"></script>
+    <script src="admin.js"></script>
 </body>
 </html>

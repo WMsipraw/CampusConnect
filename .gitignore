@@ -1,0 +1,6 @@
+db.json
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/
+settings.json

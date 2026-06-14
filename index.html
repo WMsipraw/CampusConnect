@@ -4,79 +4,299 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>CampusConnect</title>
-
-    <link rel="stylesheet" href="css/style.css">
+    <link rel="stylesheet" href="style.css">
 </head>
-<body class="index">
+<body>
 
-    <!-- NAVBAR -->
-    <header>
+    <!-- 1. LANDING/LOGGED-OUT NAVBAR -->
+    <header id="logged-out-header" class="nav-container">
         <nav class="navbar">
             <div class="logo">CampusConnect</div>
-
             <ul class="nav-links">
                 <li><a href="#categories">Categories</a></li>
                 <li><a href="#how-it-works">How It Works</a></li>
-                <li><a href="login.html" class="login-nav-btn">Login</a></li>
-                <li><a href="register.html" class="register-btn">Register</a></li>
+                <li><a href="#login" class="login-nav-btn">Login</a></li>
+                <li><a href="#register" class="register-btn">Register</a></li>
             </ul>
         </nav>
     </header>
 
-    <!-- HERO SECTION -->
-    <section class="hero">
-        <div class="hero-content">
-            <h1>Find Trusted Student Services On Campus</h1>
-            <p>
-                Connect with tutors, designers, repair experts, and more —
-                all within your university community.
-            </p>
-
-            <a href="register.html" class="hero-btn">Get Started</a>
-        </div>
-    </section>
-
-    <!-- SERVICE CATEGORIES -->
-    <section id="categories" class="categories">
-        <h2>Popular Service Categories</h2>
-
-        <div class="category-grid">
-            <div class="category-card">Tutoring</div>
-            <div class="category-card">Graphic Design</div>
-            <div class="category-card">Laptop Repair</div>
-            <div class="category-card">Photography</div>
-            <div class="category-card">Programming Help</div>
-            <div class="category-card">Assignment Formatting</div>
-        </div>
-    </section>
-
-    <!-- HOW IT WORKS -->
-    <section id="how-it-works" class="how-it-works">
-        <h2>How It Works</h2>
-
-        <div class="steps">
-            <div class="step-card">
-                <h3>1. Register</h3>
-                <p>Create an account using your university roll number.</p>
+    <!-- 2. USER DASHBOARD/LOGGED-IN NAVBAR -->
+    <header id="logged-in-header" class="nav-container hidden">
+        <nav class="navbar">
+            <div class="logo">CampusConnect</div>
+            <ul class="nav-links">
+                <li><a href="#home">Home</a></li>
+                <li><a href="#home-services">Services</a></li>
+                <li><a href="#home-requests">Requests</a></li>
+                <li><a href="#home-about">About</a></li>
+            </ul>    
+            <div class="user-actions">
+                <div class="search-container">
+                    <label for="search-input" class="hidden">Search services</label>
+                    <input id="search-input" type="text" placeholder="Search services">
+                    <div id="search-dropdown" class="search-results-dropdown hidden"></div>
+                </div>
+                <a href="#profile" class="user-profile-link">
+                    <span class="user-profile">user</span>
+                </a>
+                <button class="logout-btn">Logout</button>
             </div>
+        </nav>
+    </header>
 
-            <div class="step-card">
-                <h3>2. Browse Services</h3>
-                <p>Find trusted student providers across multiple categories.</p>
-            </div>
+    <main id="main-content">
 
-            <div class="step-card">
-                <h3>3. Book Service</h3>
-                <p>Send booking requests and connect easily.</p>
-            </div>
-        </div>
-    </section>
+        <!-- VIEW A: LANDING PAGE -->
+        <section id="view-landing" class="view-section">
+            <section class="hero">
+                <div class="hero-content">
+                    <h1>Find Trusted Student Services On Campus</h1>
+                    <p>Connect with tutors, designers, repair experts, and more — all within your university community.</p>
+                    <a href="#register" class="hero-btn">Get Started</a>
+                </div>
+            </section>
 
-    <!-- FOOTER -->
+            <section id="categories" class="categories">
+                <h2>Popular Service Categories</h2>
+                <div class="category-grid">
+                    <div class="category-card">Tutoring</div>
+                    <div class="category-card">Graphic Design</div>
+                    <div class="category-card">Laptop Repair</div>
+                    <div class="category-card">Photography</div>
+                    <div class="category-card">Programming Help</div>
+                    <div class="category-card">Assignment Formatting</div>
+                </div>
+            </section>
+
+            <section id="how-it-works" class="how-it-works">
+                <h2>How It Works</h2>
+                <div class="steps">
+                    <div class="step-card">
+                        <h3>1. Register</h3>
+                        <p>Create an account using your university roll number.</p>
+                    </div>
+                    <div class="step-card">
+                        <h3>2. Browse Services</h3>
+                        <p>Find trusted student providers across multiple categories.</p>
+                    </div>
+                    <div class="step-card">
+                        <h3>3. Book Service</h3>
+                        <p>Send booking requests and connect easily.</p>
+                    </div>
+                </div>
+            </section>
+        </section>
+
+        <!-- VIEW B: LOGIN PAGE -->
+        <section id="view-login" class="view-section register hidden">
+            <header class="page_header">
+                <h1>Welcome Back</h1>
+            </header>
+            <form id="login-form" class="card">
+                <h2>Login</h2>
+                <div class="fields">
+                    <label for="login-email">Email</label>
+                    <input id="login-email" name="email" type="email" autocomplete="email" required placeholder="Enter Your email">
+                    <label for="login-password">Password</label>
+                    <input id="login-password" name="password" type="password" required placeholder="Enter Your Password">
+                    <button type="submit">Login</button>
+                </div>
+            </form>
+            <p>Don’t have account? <a href="#register">Register</a></p>
+        </section>
+
+        <!-- VIEW C: REGISTER PAGE -->
+        <section id="view-register" class="view-section register hidden">
+            <header class="page_header">
+                <h1>Registration</h1>
+            </header>
+            <form id="register-form" class="card">
+                <h2>Create Account</h2>
+                <div class="fields">
+                    <label for="register-fullname">Full Name</label>
+                    <input id="register-fullname" name="fullname" type="text" autocomplete="name" required placeholder="Enter Your Name">
+                    <label for="register-email">Email</label>
+                    <input id="register-email" name="email" type="email" autocomplete="email" required placeholder="Enter Your email">
+                    <label for="register-university_id">University ID</label>
+                    <input id="register-university_id" name="university_id" type="text" required autocomplete="off" placeholder="Roll Number / Staff ID">
+                    <div class="form_group">
+                        <label for="register-password">Password</label>
+                        <input id="register-password" name="password" type="password" required placeholder="Create Strong Password">
+                        <label for="register-confirm_password">Confirm Password</label>
+                        <input id="register-confirm_password" name="confirm_password" type="password" required placeholder="Must Match with Password">
+                        <small>Must match password</small>
+                    </div>
+                    <button type="submit">Register</button>
+                </div>
+            </form>
+            <p>Already have an account? <a href="#login">Login</a></p>
+        </section>
+
+        <!-- VIEW D: HOME / ACTIVE REQUESTS BOARD -->
+        <section id="view-home" class="view-section hidden">
+            <section class="welcome-section">
+                <h1>Welcome Back</h1>
+                <p>Connect with tutors, designers, repair experts, and more — all within your university community.</p>
+                <button class="explore-btn">Explore Now</button>
+            </section>  
+
+            <section class="services-section">
+                <h2>Popular Services</h2>
+                <div class="services-grid">
+                    <div class="service-card">
+                        <h3>DBMS Tutoring</h3>
+                        <p>Get personalized database management guidance for assignments, concepts, ER diagrams, normalization, and SQL practice.</p>
+                        <button>Contact</button>
+                    </div>
+                    <div class="service-card">
+                        <h3>Programming Help</h3>
+                        <p>Receive support for coding projects, debugging, web development tasks, and semester programming assignments.</p>
+                        <button>Contact</button>
+                    </div>
+                    <div class="service-card">
+                        <h3>Laptop Repair</h3>
+                        <p>Find trusted campus technicians for software troubleshooting, hardware fixes, formatting, and performance optimization.</p>
+                        <button>Contact</button>
+                    </div>
+                    <div class="service-card">
+                        <h3>Assignment Formatting</h3>
+                        <p>Get professional formatting for reports, presentations, documentation, and university assignment submissions.</p>
+                        <button>Contact</button>
+                    </div>
+                    <div class="service-card">
+                        <h3>Photography</h3>
+                        <p>Connect with student photographers for event coverage, portraits, product shoots, and creative campus projects.</p>
+                        <button>Contact</button>
+                    </div>
+                    <div class="service-card">
+                        <h3>Graphic Design</h3>
+                        <p>Create professional posters, social media designs, presentations, logos, and branding materials for academic and personal projects.</p>
+                        <button>Contact</button>
+                    </div>
+                </div>
+            </section> 
+
+            <section class="requests-section">
+                <h2>Active Requests</h2>
+                <div class="requests-header-action">
+                    <a href="#create-request" class="create-request-section-btn">Post a New Request</a>
+                    
+                    <div class="sort-controls">
+                        <span>Filter by Category:</span>
+                        <select id="filter-category" class="sort-btn" style="width: auto;">
+                            <option value="All">All Categories</option>
+                            <option value="Tutoring">Tutoring</option>
+                            <option value="Graphic Design">Graphic Design</option>
+                            <option value="Programming Help">Programming Help</option>
+                            <option value="Laptop Repair">Laptop Repair</option>
+                            <option value="Photography">Photography</option>
+                            <option value="Other">Other</option>
+                        </select>
+                    </div>
+
+                    <div class="sort-controls">
+                        <span>Sort by:</span>
+                        <button id="sort-category" class="sort-btn">Category</button>
+                        <button id="sort-newest" class="sort-btn">Newest</button>
+                        <button id="sort-budget" class="sort-btn">Budget</button>
+                    </div>
+                </div>
+
+                <div class="requests-grid" id="requests-list"></div>
+            </section>
+        </section>
+
+        <!-- VIEW E: CREATE REQUEST FORM -->
+        <section id="view-create-request" class="view-section register hidden">
+            <header>
+                <h1>Create Request</h1>
+            </header>
+            <form class="request-form card" id="request-form">
+                <label for="request-title">Title</label>
+                <input id="request-title" name="title" type="text" placeholder="Enter request title" required>
+                
+                <label for="request-description">Request Description</label>
+                <textarea id="request-description" name="request-des" placeholder="Describe what you want" required></textarea>
+                
+                <label for="request-category">Categories</label>
+                <select id="request-category" name="categories-dropdown">
+                    <option value="Tutoring">Tutoring</option>
+                    <option value="Graphic Design">Graphic Design</option>
+                    <option value="Programming Help">Programming Help</option>
+                    <option value="Laptop Repair">Laptop Repair</option>
+                    <option value="Photography">Photography</option>
+                    <option value="Other">Other</option>
+                </select>
+                
+                <label for="request-deadline">Deadline</label>
+                <input id="request-deadline" name="deadline" type="date" required>
+                
+                <label for="request-budget">Budget</label>
+                <input id="request-budget" name="budget" type="number" required placeholder="Enter expected budget">
+                
+                <button class="submit-btn" type="submit">Submit Request</button>
+            </form>
+        </section>
+
+        <!-- VIEW F: REQUEST DETAILS AND SEND OFFER (Persistent Back Button Layout) -->
+        <section id="view-request-details" class="view-section register hidden">
+            <main class="request-details-card card">
+                <h1 id="details-title">Loading Details...</h1>
+                <p id="details-desc">Full request details will appear here...</p>
+                
+                <div class="request-meta">
+                    <p><strong>Category:</strong> <span id="details-category"></span></p>
+                    <p><strong>Budget:</strong> <span id="details-budget"></span></p>
+                    <p><strong>Deadline:</strong> <span id="details-deadline"></span></p>
+                    <p><strong>Client:</strong> <span id="details-client"></span></p>
+                </div>
+
+                <section class="offer-form-section hidden">
+                    <h2>Send an Offer to Help</h2>
+                    <form id="offer-form" class="fields">
+                        <label for="offer-message">Your Proposal Message</label>
+                        <textarea id="offer-message" required placeholder="Tell the client how you can help..."></textarea>
+                        
+                        <button type="submit" class="submit-btn">Send Offer to Client</button>
+                    </form>
+                </section>
+
+                <div class="form-actions" style="margin-top: 20px;">
+                    <a href="#home" class="cancel-btn">Back to Dashboard</a>
+                </div>
+            </main>
+        </section>
+
+        <!-- VIEW G: PROFILE AND RECEIVED OFFERS -->
+        <section id="view-profile" class="view-section profile-page hidden">
+            <main class="profile-container card">
+                <div class="profile-header">
+                    <h1 id="profile-name">Loading...</h1>
+                    <p id="profile-email-header">student@university.edu</p>
+                </div>
+                <div class="profile-info">
+                    <p><strong>University ID:</strong> <span id="profile-id"></span></p>
+                    <p><strong>Contact Email:</strong> <span id="profile-email"></span></p>
+                </div>
+                
+                <section class="profile-activity">
+                    <h2>Offers Received on My Requests</h2>
+                    <div id="offers-received-list" class="activity-list"></div>
+                </section>
+
+                <div class="form-actions">
+                    <a href="#home" class="cancel-btn">Back to Dashboard</a>
+                </div>
+            </main>
+        </section>
+
+    </main>
+
     <footer>
         <p>© 2026 CampusConnect. All Rights Reserved.</p>
     </footer>
 
-    <script src="js/app.js"></script>
+    <script src="app.js"></script>
 </body>
 </html>

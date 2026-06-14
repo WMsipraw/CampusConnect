@@ -1,7 +1,6 @@
 // 1. Global API Configuration
 const API_BASE_URL = "http://localhost:3000";
 
-// --- GLOBAL ADMIN SELECTORS ---
 const requestsTableBody = document.getElementById("admin-requests-table");
 const providersTableBody = document.getElementById("admin-providers-table");
 const bookingsTableBody = document.getElementById("admin-bookings-table");
@@ -15,14 +14,10 @@ const providerForm = document.getElementById("provider-form");
 const toggleProviderBtn = document.getElementById("toggle-provider-btn");
 const cancelProviderBtn = document.getElementById("cancel-provider");
 
-
-// --- INITIAL DASHBOARD SETUP TRIGGER ---
 document.addEventListener("DOMContentLoaded", () => {
     fetchAdminDashboardData();
 });
 
-
-// --- COLLAPSIBLE PROVIDER FORM CONTROLS ---
 if (toggleProviderBtn && providerFormContainer) {
     toggleProviderBtn.addEventListener("click", () => {
         providerFormContainer.classList.toggle("hidden");
@@ -36,12 +31,9 @@ if (cancelProviderBtn && providerFormContainer) {
     });
 }
 
-
-// --- POST VERIFIED PROVIDERS (Table 2 CRUD) ---
 if (providerForm) {
     providerForm.addEventListener("submit", async function (e) {
         e.preventDefault();
-
         const name = document.getElementById("provider-name").value.trim();
         const email = document.getElementById("provider-email").value.trim();
         const category = document.getElementById("provider-category").value;
@@ -57,29 +49,22 @@ if (providerForm) {
             });
 
             if (!response.ok) throw new Error();
-
             alert("Verified Provider added successfully!");
             providerForm.reset();
             providerFormContainer.classList.add("hidden");
-            
-            fetchAdminDashboardData(); // Refreshes stats and tables automatically
-
+            fetchAdminDashboardData();
         } catch (error) {
-            console.error("Error adding provider:", error);
-            alert("Failed to save provider to database.");
+            alert("Failed to save provider.");
         }
     });
 }
 
-
-// --- MASTER FETCH & METRIC STATISTICS CALCULATIONS ---
 async function fetchAdminDashboardData() {
     showLoader("admin-requests-loading", "admin-requests-error", true);
     showLoader("admin-providers-loading", "admin-providers-error", true);
     showLoader("admin-bookings-loading", "admin-bookings-error", true);
 
     try {
-        // Parallel fetch of all collections (GET method)
         const [requestsRes, providersRes, bookingsRes] = await Promise.all([
             fetch(`${API_BASE_URL}/requests`),
             fetch(`${API_BASE_URL}/providers`),
@@ -92,10 +77,7 @@ async function fetchAdminDashboardData() {
         const providers = await providersRes.json();
         const bookings = await bookingsRes.json();
 
-        // 1. Calculate dynamic statistics
         calculateAdminStats(requests, bookings);
-
-        // 2. Render all three management tables programmatically
         renderRequestsTable(requests);
         renderProvidersTable(providers);
         renderBookingsTable(bookings);
@@ -105,7 +87,6 @@ async function fetchAdminDashboardData() {
         showLoader("admin-bookings-loading", "admin-bookings-error", false);
 
     } catch (error) {
-        console.error("Error loading admin dashboard:", error);
         showError("admin-requests-loading", "admin-requests-error");
         showError("admin-providers-loading", "admin-providers-error");
         showError("admin-bookings-loading", "admin-bookings-error");
@@ -113,33 +94,24 @@ async function fetchAdminDashboardData() {
 }
 
 function calculateAdminStats(requests, bookings) {
-    // Stat 1: Total requests posted
     document.getElementById("stat-total-requests").textContent = requests.length;
-
-    // Stat 2: Total completed/approved bookings
     const approvedCount = bookings.filter(b => b.status === "Approved").length;
     document.getElementById("stat-approved-requests").textContent = approvedCount;
-
-    // Stat 3: Total pending confirmation approvals (Client accepted, waiting for Admin)
     const pendingCount = bookings.filter(b => b.status === "Accepted by Client, Pending Admin Approval").length;
     document.getElementById("stat-pending-approvals").textContent = pendingCount;
 }
 
-
-// --- TABLE 1: RENDER REQUESTS BOARD ---
+// --- TABLE 1: RENDERS REQUEST BOARD (Task 1 & 2 Completed) ---
 function renderRequestsTable(requestsArray) {
     requestsTableBody.textContent = "";
 
     if (requestsArray.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 5;
-        td.className = "status-message";
-        td.textContent = "No campus requests currently in database.";
-        tr.appendChild(td);
-        requestsTableBody.appendChild(tr);
+        requestsTableBody.innerHTML = `<tr><td colspan="6" class="status-message">No requests listed.</td></tr>`;
         return;
     }
+
+    const today = new Date();
+    today.setHours(0,0,0,0);
 
     requestsArray.forEach(req => {
         const tr = document.createElement("tr");
@@ -156,12 +128,27 @@ function renderRequestsTable(requestsArray) {
         tdBudget.textContent = `Rs. ${req.budget}`;
         tr.appendChild(tdBudget);
 
+        // Task 1: Added deadline text cell render
+        const tdDeadline = document.createElement("td");
+        tdDeadline.textContent = req.deadline;
+        tr.appendChild(tdDeadline);
+
+        // Task 2: Calculate Expired Requests (Strict deadline math)
+        const deadlineDate = new Date(req.deadline);
+        deadlineDate.setHours(0,0,0,0);
+        const isExpired = deadlineDate < today && req.status !== "Completed";
+
         const tdStatus = document.createElement("td");
-        tdStatus.textContent = req.status;
+        if (isExpired) {
+            tdStatus.textContent = `${req.status} (Expired)`;
+            tdStatus.style.color = "#c0392b";
+            tdStatus.style.fontWeight = "bold";
+        } else {
+            tdStatus.textContent = req.status;
+        }
         tr.appendChild(tdStatus);
 
         const tdActions = document.createElement("td");
-
         const editBtn = document.createElement("button");
         editBtn.className = "edit-btn";
         editBtn.textContent = "Edit";
@@ -179,19 +166,11 @@ function renderRequestsTable(requestsArray) {
     });
 }
 
-
-// --- TABLE 2: RENDER VERIFIED PROVIDERS ---
 function renderProvidersTable(providersArray) {
     providersTableBody.textContent = "";
 
     if (providersArray.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 5;
-        td.className = "status-message";
-        td.textContent = "No verified campus providers currently listed.";
-        tr.appendChild(td);
-        providersTableBody.appendChild(tr);
+        providersTableBody.innerHTML = `<tr><td colspan="5" class="status-message">No providers listed.</td></tr>`;
         return;
     }
 
@@ -226,19 +205,11 @@ function renderProvidersTable(providersArray) {
     });
 }
 
-
-// --- TABLE 3: RENDER BOOKING OFFERS (Moderation & Approvals) ---
 function renderBookingsTable(bookingsArray) {
     bookingsTableBody.textContent = "";
 
     if (bookingsArray.length === 0) {
-        const tr = document.createElement("tr");
-        const td = document.createElement("td");
-        td.colSpan = 6;
-        td.className = "status-message";
-        td.textContent = "No booking offers currently in database.";
-        tr.appendChild(td);
-        bookingsTableBody.appendChild(tr);
+        bookingsTableBody.innerHTML = `<tr><td colspan="6" class="status-message">No bookings listed.</td></tr>`;
         return;
     }
 
@@ -267,37 +238,28 @@ function renderBookingsTable(bookingsArray) {
 
         const tdActions = document.createElement("td");
 
-        // Action controls based on the 3-Stage Workflow
         if (booking.status === "Accepted by Client, Pending Admin Approval") {
             const approveBtn = document.createElement("button");
-            approveBtn.className = "edit-btn"; // Blue-themed
+            approveBtn.className = "edit-btn";
             approveBtn.textContent = "Approve Match";
             approveBtn.addEventListener("click", () => approveBookingMatch(booking.id));
             tdActions.appendChild(approveBtn);
 
             const rejectBtn = document.createElement("button");
-            rejectBtn.className = "delete-btn"; // Red-themed
+            rejectBtn.className = "delete-btn";
             rejectBtn.textContent = "Reject";
             rejectBtn.addEventListener("click", () => rejectBooking(booking.id));
             tdActions.appendChild(rejectBtn);
-        } 
-        else if (booking.status === "Approved") {
-            const finalizedText = document.createElement("span");
-            finalizedText.className = "status-approved";
-            finalizedText.textContent = "Match Approved";
-            tdActions.appendChild(finalizedText);
-
-            const removeBtn = document.createElement("button");
-            removeBtn.className = "delete-btn";
-            removeBtn.textContent = "Remove";
-            removeBtn.addEventListener("click", () => rejectBooking(booking.id));
-            tdActions.appendChild(removeBtn);
-        } 
-        else {
-            const pendingText = document.createElement("span");
-            pendingText.className = "status-pending-admin";
-            pendingText.textContent = "Waiting for Client";
-            tdActions.appendChild(pendingText);
+        } else if (booking.status === "Approved") {
+            const span = document.createElement("span");
+            span.className = "status-approved";
+            span.textContent = "Approved";
+            tdActions.appendChild(span);
+        } else {
+            const span = document.createElement("span");
+            span.className = "status-pending-admin";
+            span.textContent = "Pending Client";
+            tdActions.appendChild(span);
         }
 
         tr.appendChild(tdActions);
@@ -305,82 +267,69 @@ function renderBookingsTable(bookingsArray) {
     });
 }
 
-
-// --- DYNAMIC DATABASE CRUDS (DELETE & PATCH/PUT) ---
-
+// --- DATABASE SYNCS (Updated with mandatory response.ok check validations) ---
 async function deleteRequest(id) {
-    const isConfirmed = confirm("Are you sure you want to permanently delete this request?");
-    if (!isConfirmed) return;
-
+    if (!confirm("Are you sure?")) return;
     try {
         const response = await fetch(`${API_BASE_URL}/requests/${id}`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to delete request.");
+        alert("Failed to delete.");
     }
 }
 
 async function deleteProvider(id) {
-    const isConfirmed = confirm("Are you sure you want to remove this verified provider?");
-    if (!isConfirmed) return;
-
+    if (!confirm("Are you sure?")) return;
     try {
         const response = await fetch(`${API_BASE_URL}/providers/${id}`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to remove provider.");
+        alert("Failed to delete.");
     }
 }
 
 async function rejectBooking(id) {
-    const isConfirmed = confirm("Are you sure you want to reject/remove this help offer?");
-    if (!isConfirmed) return;
-
+    if (!confirm("Are you sure?")) return;
     try {
         const response = await fetch(`${API_BASE_URL}/bookings/${id}`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to reject offer.");
+        alert("Failed to reject.");
     }
 }
 
 async function approveBookingMatch(id) {
     try {
-        // A. Fetch the booking first to find the associated requestId (GET)
         const bookingRes = await fetch(`${API_BASE_URL}/bookings/${id}`);
+        // Ensure response is ok prior to converting content
         if (!bookingRes.ok) throw new Error();
-        const bookingData = await bookingRes.json();
+        const booking = await bookingRes.json();
 
-        // B. Update booking status to "Approved" (PATCH)
-        const approveResponse = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+        const patchBookingRes = await fetch(`${API_BASE_URL}/bookings/${id}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "Approved" })
         });
+        if (!patchBookingRes.ok) throw new Error();
 
-        if (!approveResponse.ok) throw new Error();
-
-        // C. Update the associated Request status to "Completed" (PATCH)
-        // This automatically hides it from the student home board in real-time!
-        await fetch(`${API_BASE_URL}/requests/${bookingData.requestId}`, {
+        const patchReqRes = await fetch(`${API_BASE_URL}/requests/${booking.requestId}`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "Completed" })
         });
+        if (!patchReqRes.ok) throw new Error();
 
-        alert("Match officially approved! Booking finalized and request marked as completed.");
+        alert("Booking formally finalized!");
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to approve match.");
+        alert("Failed to approve.");
     }
 }
 
-
-// --- DYNAMIC REQUEST EDIT FORM CONTROLS (PUT) ---
-
+// --- DYNAMIC REQUEST FORM MODIFICATIONS (PATCH Replacement) ---
 function loadRequestIntoEditForm(req) {
     editSection.classList.remove("hidden");
     document.getElementById("edit-id").value = req.id;
@@ -398,6 +347,7 @@ if (editForm) {
         e.preventDefault();
         const id = document.getElementById("edit-id").value;
 
+        // PATCH payload (Prevents resetting user fields like userId/userName)
         const updatedData = {
             title: document.getElementById("edit-title").value,
             description: document.getElementById("edit-description").value,
@@ -408,8 +358,9 @@ if (editForm) {
         };
 
         try {
+            // Task 3: Swapped PUT with PATCH to avoid deleting existing properties
             const response = await fetch(`${API_BASE_URL}/requests/${id}`, {
-                method: "PUT",
+                method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedData)
             });
@@ -418,7 +369,7 @@ if (editForm) {
             editSection.classList.add("hidden");
             fetchAdminDashboardData();
         } catch (err) {
-            alert("Failed to save request changes.");
+            alert("Failed to edit request.");
         }
     });
 }
@@ -426,12 +377,8 @@ if (editForm) {
 if (cancelEditBtn) {
     cancelEditBtn.addEventListener("click", () => {
         editSection.classList.add("hidden");
-        editForm.reset();
     });
 }
-
-
-// --- LOADERS AND ERROR TIMEOUT HANDLERS ---
 
 function showLoader(loadId, errorId, show) {
     const loader = document.getElementById(loadId);
