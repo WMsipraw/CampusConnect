@@ -3,31 +3,39 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Profile</title>
-
+    <title>My Profile - CampusConnect</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="profile-page">
-    <div class="profile-container">
+
+    <nav class="navbar">
+        <div class="logo">CampusConnect</div>
+        <div class="user-actions">
+            <span class="user-profile">user</span>
+        </div>
+    </nav>
+
+    <main class="profile-container card">
         <div class="profile-header">
-            <h1></h1>
-            <p></p>
+            <h1 id="profile-name">Loading...</h1>
+            <p id="profile-email-header">student@university.edu</p>
         </div>
         <div class="profile-info">
-            <p><strong>University ID:</strong> <span></span></p>
-            <p><strong>Skills:</strong> <span></span></p>
-            <p><strong>Contact Email:</strong> <span></span></p>
+            <p><strong>University ID:</strong> <span id="profile-id"></span></p>
+            <p><strong>Contact Email:</strong> <span id="profile-email"></span></p>
         </div>
-        <div class="profile-activity">
-            <h2>Recent Activity</h2>
-            <div class="activity-list">
-                <div class="activity-item">
-                    <p>Posted a DBMS assignment request</p>
-                </div>
-            </div>    
+        
+        <section class="profile-activity">
+            <h2>Offers Received on My Requests</h2>
+            <div id="offers-received-list" class="activity-list">
+            </div>
+        </section>
+
+        <div class="form-actions">
+            <a href="home.html" class="cancel-btn">Back to Dashboard</a>
         </div>
-    </div>
-    <script src="js/app.js"></script>
+    </main>
     
+    <script src="js/app.js"></script>
 </body>
 </html>

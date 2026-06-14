@@ -1,3 +1,7 @@
+*, *:before, *:after {
+    box-sizing: border-box !important;
+}
+
 body {
     background-color: #f8fafc; 
     color: #1e293b;            
@@ -9,6 +13,8 @@ body {
     justify-content: space-between;
     align-items: center ;
     padding: 20px;
+    width: 100%;
+    box-sizing: border-box;
 }
 .logo{
     font-size: 50px;
@@ -33,6 +39,17 @@ body {
     /* border: 1px solid red; */
 }
 
+.user-profile-link {
+    text-decoration: none !important;
+    transition: 0.3s;
+    display: inline-block;
+}
+
+.user-profile-link:hover .user-profile {
+    color: #3b82f6; 
+    cursor: pointer;
+    transform: scale(1.05); 
+}
 
 /* .login-nav-btn {
     transition: 0.4s;
@@ -341,6 +358,60 @@ nav .user-actions input{
     /* outline: ; */
     transition: all 0.3s ease;
     outline: none;
+}
+
+.search-container {
+    position: relative;
+    display: inline-block;
+}
+
+.search-results-dropdown {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    z-index: 1000;
+    max-height: 250px;
+    overflow-y: auto;
+    margin-top: 5px;
+}
+
+.search-item-link {
+    display: block;
+    padding: 10px 15px;
+    color: #1e293b;
+    text-decoration: none !important;
+    font-size: 14px;
+    font-weight: 500;
+    transition: 0.2s;
+    border-bottom: 1px solid #f1f5f9;
+    text-align: left;
+}
+
+.search-item-link:last-child {
+    border-bottom: none;
+}
+
+.search-item-link:hover {
+    background-color: #f1f5f9;
+    color: #3b82f6; 
+}
+
+
+
+.search-no-results {
+    color: #64748b !important;        
+    cursor: default !important;      
+    background-color: transparent !important;
+}
+
+.search-no-results:hover {
+    background-color: transparent !important; 
+    color: #64748b !important;
 }
 
 .logout-btn{
@@ -717,6 +788,15 @@ footer p{
     color: rgb(80, 80, 80);
 }
 
+.request-details-card.card {
+    width: 700px !important;
+    margin-top: 40px !important;
+}
+
+.request-details-card .request-meta {
+    margin-bottom: 35px !important;
+}
+
 .request-meta{
     margin-top: 30px;
     padding-top: 20px;
@@ -756,18 +836,48 @@ footer p{
     box-shadow: 0 4px 10px rgba(0,0,0,0.4);
 }
 
+.submit-btn {
+    background-color: #3b82f6 !important;
+    color: white !important;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 18px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: 0.3s;
+    width: 100%; 
+}
+
+.submit-btn:hover {
+    background-color: #2563eb !important; 
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
 
 .profile-page{
     display: flex;
-    justify-content: center;
+    flex-direction: column;
+    /* justify-content: center; */
     align-items: center;
     min-height: 100vh;
-    padding: 40px 20px;
+    padding-bottom: 40px;
+    background-color: #f8fafc;
+    /* padding: 40px 20px; */
 }
 
 .profile-container{
     width: 700px;
     padding: 20px 0;
+}
+
+.profile-container.card {
+    width: 700px !important;
+    margin-top: 40px !important;
+}
+
+.profile-container .form-actions {
+    margin-top: 30px !important;
 }
 
 .profile-header h1{
@@ -889,7 +999,7 @@ footer p{
 .stat-number {
     font-size: 32px;
     font-weight: bold;
-    color: #3b82f6; /* Modern Tech Blue */
+    color: #3b82f6; 
 }
 
 .admin-edit-card {
@@ -1110,29 +1220,16 @@ footer p{
     border: 1px solid #abebc6;
 }
 
-/* Style for textareas globally to match input styles */
-textarea {
-    box-sizing: border-box !important;
-    border: 2px solid gray;
-    border-radius: 8px;
-    padding: 10px;
-    width: 100%;
-    font-size: 16px;
-    transition: 0.4s;
-    outline: none;
-    font-family: inherit; /* Ensures textarea inherits the page font family */
-}
 
 textarea:focus {
     border-color: rgb(127, 144, 255);
     box-shadow: 3px 10px 25px rgba(0,0,0,0.3);
 }
 
-/* Contact Client Button (Clean, styled with absolutely no inline CSS) */
 .contact-btn {
     display: inline-block;
     transition: 0.4s;
-    background-color: #64748b; /* Steel Slate */
+    background-color: #64748b;
     color: white !important;
     padding: 10px 18px;
     border-radius: 10px;
@@ -1145,7 +1242,85 @@ textarea:focus {
 }
 
 .contact-btn:hover {
-    background-color: #475569; /* Darker Slate on hover */
+    background-color: #475569; 
     transform: translateY(-4px);
     box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+}
+
+
+
+.status-pending-admin {
+    color: #e67e22; 
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.status-approved {
+    color: #27ae60; 
+    font-weight: bold;
+    font-size: 14px;
+    margin-top: 10px;
+}
+
+.profile-offer-title {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+    color: #1e293b;
+}
+
+.profile-offer-meta {
+    font-size: 15px;
+    color: #475569;
+    margin: 5px 0;
+}
+
+.contact-highlight {
+    background-color: #d4efdf;
+    color: #145a32;            
+    padding: 12px;
+    border-radius: 8px;
+    margin-top: 12px;
+    border: 1px solid #abebc6;
+    font-size: 15px;
+}
+
+a.cancel-btn {
+    display: inline-block;
+    text-align: center;
+    text-decoration: none !important;
+    line-height: 2.4;
+    color: white !important;
+}
+
+.submit-request-btn,
+#request-form .submit-btn {
+    background-color: #3b82f6 !important; 
+    color: white !important;              
+    width: 100% !important;                
+    padding: 10px 18px !important;         
+    border: none !important;
+    border-radius: 10px !important;       
+    transition: 0.3s;
+    font-size: 16px !important;
+    font-weight: 500 !important;
+    cursor: pointer;
+    display: block !important;            
+}
+
+.submit-request-btn:hover,
+#request-form .submit-btn:hover {
+    background-color: #2563eb !important; 
+    transform: translateY(-4px);
+    box-shadow: 0 4px 10px rgba(37, 99, 235, 0.3);
+}
+
+.request-form.card {
+    width: 700px !important;
+    margin-top: 40px !important;
+    background-color: #ffffff !important;
+    border: 1px solid #e2e8f0 !important;
+    border-radius: 20px !important;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.05) !important;
 }

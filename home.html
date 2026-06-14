@@ -17,8 +17,13 @@
             <li><a href="#About">About</a></li>
         </ul>    
         <div class="user-actions">
-            <input type="text" placeholder="Search services">
-            <span class="user-profile">user</span>
+            <div class="search-container">
+                <input id="search-input" type="text" placeholder="Search services">
+                <div id="search-dropdown" class="search-results-dropdown hidden"></div>
+            </div>
+            <a href="profile.html" class="user-profile-link">
+                <span class="user-profile">user</span>
+            </a>
             <button class="logout-btn">Logout</button>
         </div>
     </nav>
