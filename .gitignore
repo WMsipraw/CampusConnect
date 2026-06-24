@@ -1,4 +1,19 @@
+# Local database (keeps your test data private)
+db.sqlite3
 db.json
+
+# Local Virtual Environment (no need to upload this)
+venv/
+ENV/
+env/
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Editor configuration files
 .DS_Store
 Thumbs.db
 .idea/

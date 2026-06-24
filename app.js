@@ -1,13 +1,44 @@
-// 1. Global API Configuration
-const API_BASE_URL = "http://localhost:3000";
+// app.js
+const API_BASE_URL = "http://127.0.0.1:8000/api";
 
-// --- DOM ELEMENTS / SELECTORS ---
-const userProfileSpan = document.querySelector(".user-profile");
 const logoutBtns = document.querySelectorAll(".logout-btn");
+const searchInput = document.getElementById("search-input");
+const searchDropdown = document.getElementById("search-dropdown");
 
-// --- LIGHTWEIGHT HASH-BASED ROUTER ---
+// Custom Professional Notification Engine
+function showNotification(message, type = "success") {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    container.appendChild(toast);
+    
+    // Smooth insertion transitions
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 50);
+
+    // Fade out and release resources
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
+// Input Sanitization Helper against XSS Inject Attacks
+function sanitize(str) {
+    if (!str) return "";
+    const temp = document.createElement("div");
+    temp.textContent = str;
+    return temp.innerHTML;
+}
+
+// --- LIGHTWEIGHT ROUTER WITH SECURITY ROUTE GUARDS ---
 window.addEventListener("hashchange", routeSPA);
-window.addEventListener("DOMContentLoaded", () => {
+document.addEventListener("DOMContentLoaded", () => {
     routeSPA();
     setupGlobalEventListeners();
 });
@@ -18,7 +49,6 @@ async function routeSPA() {
     // Hide all view sections
     document.querySelectorAll(".view-section").forEach(sec => sec.classList.add("hidden"));
     
-    // Header management logic
     const loggedOutHeader = document.getElementById("logged-out-header");
     const loggedInHeader = document.getElementById("logged-in-header");
 
@@ -34,7 +64,17 @@ async function routeSPA() {
         loggedInHeader.classList.add("hidden");
     }
 
-    // SPA routing logic
+    // Security Verification / Redirection Boundaries
+    const protectedRoutes = ["#home", "#create-request", "#profile", "#request-details"];
+    const isProtected = protectedRoutes.some(route => hash.startsWith(route));
+
+    if (isProtected && !parsedSession) {
+        window.location.hash = "#login";
+        showNotification("Security alert: Authentication required.", "error");
+        return;
+    }
+
+    // SPA routing engine
     if (hash === "#landing") {
         document.getElementById("view-landing").classList.remove("hidden");
     } else if (hash === "#login") {
@@ -44,17 +84,15 @@ async function routeSPA() {
         if (parsedSession) { window.location.hash = "#home"; return; }
         document.getElementById("view-register").classList.remove("hidden");
     } else if (hash.startsWith("#home")) {
-        if (!parsedSession) { window.location.hash = "#login"; return; }
         document.getElementById("view-home").classList.remove("hidden");
         
-        // Fetch only if empty, else re-evaluate UI controls
         if (activeRequests.length === 0) {
             await fetchActiveRequests();
         } else {
             setupRequestsControls();
         }
 
-        // Fulfill scroll requests smoothly
+        // Scroll controllers
         if (hash === "#home-services") {
             const el = document.querySelector(".services-section");
             if (el) el.scrollIntoView({ behavior: "smooth" });
@@ -68,15 +106,12 @@ async function routeSPA() {
             window.scrollTo({ top: 0, behavior: "smooth" });
         }
     } else if (hash === "#create-request") {
-        if (!parsedSession) { window.location.hash = "#login"; return; }
         document.getElementById("view-create-request").classList.remove("hidden");
     } else if (hash.startsWith("#request-details")) {
-        if (!parsedSession) { window.location.hash = "#login"; return; }
         document.getElementById("view-request-details").classList.remove("hidden");
         const params = new URLSearchParams(hash.split("?")[1]);
         fetchRequestDetails(params.get("id"));
     } else if (hash === "#profile") {
-        if (!parsedSession) { window.location.hash = "#login"; return; }
         document.getElementById("view-profile").classList.remove("hidden");
         loadProfileData();
     }
@@ -84,7 +119,6 @@ async function routeSPA() {
 
 // --- CORE EVENT LISTENERS INITIALIZATION ---
 function setupGlobalEventListeners() {
-    // A. Registration Submission Handler
     const registerForm = document.getElementById("register-form");
     if (registerForm) {
         registerForm.addEventListener("submit", async function (e) {
@@ -99,14 +133,13 @@ function setupGlobalEventListeners() {
 
             let isValid = true;
             
-            // 1. Email structure regex format validation check
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
-                showInlineError("register-email", "Please enter a valid email structure (e.g. user@university.edu).");
+                showInlineError("register-email", "Please enter a valid email structure.");
                 isValid = false;
             }
             if (password !== confirmPassword) {
-                showInlineError("register-confirm_password", "Passwords do not match!");
+                showInlineError("register-confirm_password", "Passwords do not match.");
                 isValid = false;
             }
             if (password.length < 6) {
@@ -116,32 +149,40 @@ function setupGlobalEventListeners() {
 
             if (!isValid) return;
 
-            try {
-                const checkResponse = await fetch(`${API_BASE_URL}/users?email=${email}`);
-                if (!checkResponse.ok) throw new Error();
-                const existing = await checkResponse.json();
-                if (existing.length > 0) {
-                    showInlineError("register-email", "This email is already registered.");
-                    return;
-                }
+            const newUser = { fullname, email, university_id: universityId, password, username: email };
 
-                const newUser = { fullname, email, universityId, password };
-                const response = await fetch(`${API_BASE_URL}/users`, {
+            try {
+                // Register directly with the secure backend endpoint
+                const response = await fetch(`${API_BASE_URL}/register/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newUser)
                 });
 
-                if (!response.ok) throw new Error();
+                // Secure & Clean Error Handling block
+                if (!response.ok) {
+                    try {
+                        const errorDetails = await response.json();
+                        if (errorDetails.email) {
+                            showInlineError("register-email", "This email is already registered.");
+                        } else {
+                            throw new Error("Registration failed.");
+                        }
+                    } catch (jsonErr) {
+                        // Safely catches HTML error pages from Django and alerts the user cleanly
+                        throw new Error("Server error occurred during registration. Please verify Command Prompt logs.");
+                    }
+                    return;
+                }
+                
+                showNotification("Registration successful! Please log in.");
                 window.location.hash = "#login";
             } catch (err) {
-                // Replaced default alert box with an inline validation notification
-                showInlineError("register-form", "Server connection failed. Unable to process registration.");
+                showNotification(err.message, "error");
             }
         });
     }
 
-    // B. Login Submission Handler
     const loginForm = document.getElementById("login-form");
     if (loginForm) {
         loginForm.addEventListener("submit", async function (e) {
@@ -151,51 +192,36 @@ function setupGlobalEventListeners() {
             const email = document.getElementById("login-email").value.trim();
             const password = document.getElementById("login-password").value;
 
-            let isValid = true;
-            
-            // 2. Email format validation check for login inputs
-            const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-            if (!emailRegex.test(email)) {
-                showInlineError("login-email", "Please enter a valid email address format.");
-                isValid = false;
-            }
-
-            if (!isValid) return;
-
             try {
-                const response = await fetch(`${API_BASE_URL}/users?email=${email}`);
-                if (!response.ok) throw new Error();
-                const matched = await response.json();
+                const response = await fetch(`${API_BASE_URL}/login/`, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ email, password })
+                });
 
-                if (matched.length === 0 || matched[0].password !== password) {
-                    showInlineError("login-password", "Invalid email or password.");
+                if (!response.ok) {
+                    showNotification("Invalid credentials entered.", "error");
                     return;
                 }
 
-                const user = matched[0];
-                localStorage.setItem("currentUser", JSON.stringify({
-                    id: user.id,
-                    fullname: user.fullname,
-                    email: user.email,
-                    universityId: user.universityId
-                }));
+                const user = await response.json();
+                localStorage.setItem("currentUser", JSON.stringify(user));
+                showNotification(`Welcome back, ${user.fullname}!`);
                 window.location.hash = "#home";
             } catch (err) {
-                // Replaced standard alert with inline error message block
-                showInlineError("login-form", "Database authentication failed. Server is currently unreachable.");
+                showNotification("Server communication failed.", "error");
             }
         });
     }
 
-    // C. Logout Handlers
     logoutBtns.forEach(btn => {
         btn.addEventListener("click", () => {
             localStorage.removeItem("currentUser");
+            showNotification("Logged out successfully.");
             window.location.hash = "#landing";
         });
     });
 
-    // D. Create Request Handler
     const requestForm = document.getElementById("request-form");
     if (requestForm) {
         requestForm.addEventListener("submit", async function (e) {
@@ -222,86 +248,47 @@ function setupGlobalEventListeners() {
                 isValid = false;
             }
 
-            // 3. Deadline date verification format check
-            const today = new Date();
-            today.setHours(0, 0, 0, 0);
-            const deadlineDate = new Date(deadline);
-            deadlineDate.setHours(0, 0, 0, 0);
-            if (deadlineDate < today) {
-                showInlineError("request-deadline", "The selected deadline cannot be in the past.");
-                isValid = false;
-            }
-
             if (!isValid) return;
 
             const user = JSON.parse(localStorage.getItem("currentUser"));
             const payload = {
                 title, description, category, deadline, budget,
-                userId: user.id,
-                userName: user.fullname,
+                client: user.id, // Linked securely as ForeignKey in DB
                 status: "Open"
             };
 
             try {
-                const response = await fetch(`${API_BASE_URL}/requests`, {
+                const response = await fetch(`${API_BASE_URL}/requests/`, {
                     method: "POST",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
-                if (!response.ok) throw new Error();
+                if (!response.ok) throw new Error("Could not submit requested post.");
                 requestForm.reset();
-                
-                // Clear the cached global active requests list to trigger an automatic re-render on redirection
-                activeRequests = [];
-                
+                activeRequests = []; 
+                showNotification("Campus help request posted successfully!");
                 window.location.hash = "#home";
             } catch (err) {
-                // Replaced alert popup box with inline validation notification
-                showInlineError("request-form", "Submission failed. Please check server availability.");
+                showNotification(err.message, "error");
             }
-        });
-    }
-
-    // E. Smooth Scroll Landing Link Triggers
-    const categoriesLink = document.querySelector("a[href='#categories']");
-    const howItWorksLink = document.querySelector("a[href='#how-it-works']");
-    if (categoriesLink) {
-        categoriesLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            document.getElementById("categories").scrollIntoView({ behavior: "smooth" });
-        });
-    }
-    if (howItWorksLink) {
-        howItWorksLink.addEventListener("click", (e) => {
-            e.preventDefault();
-            document.getElementById("how-it-works").scrollIntoView({ behavior: "smooth" });
-        });
-    }
-
-    // F. Smooth Scroll Welcome Action
-    const exploreBtn = document.querySelector(".explore-btn");
-    if (exploreBtn) {
-        exploreBtn.addEventListener("click", () => {
-            window.location.hash = "#home-requests";
         });
     }
 }
 
-// --- MAIN REQUESTS BOARD ENGINE ---
+// --- ACTIVE REQUESTS BOARD ENGINE ---
 let activeRequests = [];
 async function fetchActiveRequests() {
     const list = document.getElementById("requests-list");
     list.innerHTML = `<div class="status-message">Loading active board requests...</div>`;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/requests`);
-        if (!response.ok) throw new Error();
+        const response = await fetch(`${API_BASE_URL}/requests/`);
+        if (!response.ok) throw new Error("Database transit fault.");
         const raw = await response.json();
 
         const today = new Date();
         today.setHours(0, 0, 0, 0);
 
-        // Filter out completed and expired requests
         activeRequests = raw.filter(req => {
             const isCompleted = req.status === "Completed";
             const deadlineDate = new Date(req.deadline);
@@ -362,10 +349,10 @@ function renderRequestsBoard(requestsArray) {
         const meta = document.createElement("div");
         meta.className = "request-meta";
         meta.innerHTML = `
-            <p><strong>Category:</strong> ${req.category}</p>
-            <p><strong>Budget:</strong> Rs. ${req.budget}</p>
-            <p><strong>Deadline:</strong> ${req.deadline}</p>
-            <p><strong>Client:</strong> ${req.userName}</p>
+            <p><strong>Category:</strong> ${sanitize(req.category)}</p>
+            <p><strong>Budget:</strong> Rs. ${sanitize(String(req.budget))}</p>
+            <p><strong>Deadline:</strong> ${sanitize(req.deadline)}</p>
+            <p><strong>Client:</strong> ${sanitize(req.userName)}</p>
         `;
         card.appendChild(meta);
 
@@ -420,15 +407,19 @@ function setupRequestsControls() {
     if (sortBud) sortBud.onclick = () => toggleBtnState(sortBud);
 }
 
-// --- REQUEST DETAILS & PROPOSALS ---
+// --- REQUEST DETAILS & SECURED PROPOSALS SYSTEM ---
 let loadedRequest = null;
 async function fetchRequestDetails(id) {
-    const formSec = document.querySelector(".offer-form-section");
-    formSec.classList.add("hidden"); // Prevents flashing by forcing elements to remain hidden
+    const formSec = document.getElementById("details-offer-section");
+    const noticeSec = document.getElementById("details-security-notice");
+    
+    formSec.classList.add("hidden");
+    noticeSec.classList.add("hidden");
+    noticeSec.textContent = "";
 
     try {
-        const response = await fetch(`${API_BASE_URL}/requests/${id}`);
-        if (!response.ok) throw new Error();
+        const response = await fetch(`${API_BASE_URL}/requests/${id}/`);
+        if (!response.ok) throw new Error("The requested post cannot be resolved.");
         loadedRequest = await response.json();
 
         document.getElementById("details-title").textContent = loadedRequest.title;
@@ -438,38 +429,34 @@ async function fetchRequestDetails(id) {
         document.getElementById("details-deadline").textContent = loadedRequest.deadline;
         document.getElementById("details-client").textContent = loadedRequest.userName;
 
-        const userRes = await fetch(`${API_BASE_URL}/users/${loadedRequest.userId}`);
-        if (userRes.ok) {
-            const userData = await userRes.json();
-            loadedRequest.clientEmail = userData.email;
-        }
-
         const currentUser = JSON.parse(localStorage.getItem("currentUser"));
         if (currentUser) {
-            // Check 1: User is accessing their own posting
-            if (currentUser.id === loadedRequest.userId) {
-                return; // Silently stops and keeps the offer form hidden
+            if (currentUser.id === loadedRequest.client) {
+                noticeSec.className = "secure-banner";
+                noticeSec.textContent = "You posted this request. Track bids inside your Profile dashboard.";
+                return;
             }
 
-            // Check 2: Offer limit bounds (One proposal per candidate)
-            const bookingCheck = await fetch(`${API_BASE_URL}/bookings?requestId=${id}&providerId=${currentUser.id}`);
+            const bookingCheck = await fetch(`${API_BASE_URL}/bookings/?request=${id}&provider=${currentUser.id}`);
             if (bookingCheck.ok) {
                 const existing = await bookingCheck.json();
                 if (existing.length > 0) {
-                    return; // Silently stops and keeps the offer form hidden
+                    noticeSec.className = "secure-banner";
+                    noticeSec.textContent = "You have already submitted an active offer for this request.";
+                    return;
                 }
             }
 
-            // If clean checks, safely display options
             formSec.classList.remove("hidden");
         }
 
     } catch (err) {
-        document.getElementById("details-title").textContent = "Failed to load details.";
+        document.getElementById("details-title").textContent = "Request Error";
+        document.getElementById("details-desc").textContent = "Unable to fetch request details.";
+        showNotification(err.message, "error");
     }
 }
 
-// Offer Submit Controller
 const offerForm = document.getElementById("offer-form");
 if (offerForm) {
     offerForm.onsubmit = async function (e) {
@@ -480,31 +467,25 @@ if (offerForm) {
         const curr = JSON.parse(localStorage.getItem("currentUser"));
 
         const payload = {
-            requestId: loadedRequest.id,
-            requestTitle: loadedRequest.title,
-            clientId: loadedRequest.userId,
-            clientName: loadedRequest.userName,
-            clientEmail: loadedRequest.clientEmail,
-            providerId: curr.id,
-            providerName: curr.fullname,
-            providerEmail: curr.email,
+            request: loadedRequest.id,
+            provider: curr.id,
             message: msg,
             status: "Pending Client Confirmation"
         };
 
         try {
-            const res = await fetch(`${API_BASE_URL}/bookings`, {
+            const res = await fetch(`${API_BASE_URL}/bookings/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error();
-            alert("Offer successfully delivered!");
+            if (!res.ok) throw new Error("Booking registration failed.");
+            
+            showNotification("Your proposal has been securely delivered to the client!");
             offerForm.reset();
             window.location.hash = "#home";
         } catch (err) {
-            // Replaced default alert boxes with local inline validation notifications
-            showInlineError("offer-form", "Could not process booking offer. Server connection failed.");
+            showNotification(err.message, "error");
         }
     };
 }
@@ -512,6 +493,8 @@ if (offerForm) {
 // --- PROFILE LOADER ENGINE ---
 async function loadProfileData() {
     const user = JSON.parse(localStorage.getItem("currentUser"));
+    if (!user) return;
+
     document.getElementById("profile-name").textContent = user.fullname;
     document.getElementById("profile-email-header").textContent = user.email;
     document.getElementById("profile-id").textContent = user.universityId;
@@ -521,10 +504,17 @@ async function loadProfileData() {
     list.innerHTML = `<div class="status-message">Loading received bookings...</div>`;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/bookings?clientId=${user.id}`);
-        if (!response.ok) throw new Error();
+        const response = await fetch(`${API_BASE_URL}/bookings/`);
+        if (!response.ok) throw new Error("Inbound request query failed.");
         const bookings = await response.json();
-        renderProfileReceivedBookings(bookings);
+        
+        // Filter bookings belonging to requests created by the current user
+        const userRequestsRes = await fetch(`${API_BASE_URL}/requests/?client=${user.id}`);
+        const userRequests = await userRequestsRes.json();
+        const userRequestIds = userRequests.map(r => r.id);
+
+        const filteredBookings = bookings.filter(b => userRequestIds.includes(b.request));
+        renderProfileReceivedBookings(filteredBookings);
     } catch (err) {
         list.innerHTML = `<div class="status-message error-message">Failed to load offers.</div>`;
     }
@@ -535,19 +525,28 @@ function renderProfileReceivedBookings(array) {
     list.textContent = "";
 
     if (array.length === 0) {
-        list.innerHTML = `<p class="status-message">You haven't received any help offers yet.</p>`;
+        list.innerHTML = `<p class="status-message">You have not received any proposals yet.</p>`;
         return;
     }
 
     array.forEach(offer => {
         const item = document.createElement("div");
         item.className = "activity-item";
-        item.innerHTML = `
-            <h3 class="profile-offer-title">Offer on: ${offer.requestTitle}</h3>
-            <p class="profile-offer-meta"><strong>Helper:</strong> ${offer.providerName}</p>
-            <p class="profile-offer-meta"><strong>Message:</strong> "${offer.message}"</p>
-            <p class="profile-offer-meta"><strong>Status:</strong> ${offer.status}</p>
-        `;
+        
+        const title = document.createElement("h3");
+        title.className = "profile-offer-title";
+        title.textContent = `Offer ID: ${offer.id}`;
+        item.appendChild(title);
+
+        const message = document.createElement("p");
+        message.className = "profile-offer-meta";
+        message.innerHTML = `<strong>Proposal Message:</strong> "${sanitize(offer.message)}"`;
+        item.appendChild(message);
+
+        const status = document.createElement("p");
+        status.className = "profile-offer-meta";
+        status.innerHTML = `<strong>Status:</strong> ${sanitize(offer.status)}`;
+        item.appendChild(status);
 
         if (offer.status === "Pending Client Confirmation") {
             const btn = document.createElement("button");
@@ -561,18 +560,18 @@ function renderProfileReceivedBookings(array) {
                         headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ status: "Accepted by Client, Pending Admin Approval" })
                     });
-                    if (!res.ok) throw new Error();
-                    alert("Offer accepted! Sent to Admin for final approval.");
+                    if (!res.ok) throw new Error("Acceptance protocol synchronization failed.");
+                    showNotification("Proposal accepted! Redirected for Moderator Approval.");
                     loadProfileData();
                 } catch (err) {
-                    alert("Could not update booking status.");
+                    showNotification(err.message, "error");
                 }
             };
             item.appendChild(btn);
         } else if (offer.status === "Approved") {
             const info = document.createElement("p");
             info.className = "contact-highlight";
-            info.innerHTML = `<strong>Connect with Helper at:</strong> ${offer.providerEmail}`;
+            info.innerHTML = `<strong>Match finalized! Please connect through email.</strong>`;
             item.appendChild(info);
         }
 
@@ -580,7 +579,6 @@ function renderProfileReceivedBookings(array) {
     });
 }
 
-// --- UTILITY ERROR CONTROLLERS ---
 function showInlineError(id, msg) {
     const el = document.getElementById(id);
     const err = document.createElement("small");
@@ -591,110 +589,4 @@ function showInlineError(id, msg) {
 
 function clearInlineErrors() {
     document.querySelectorAll(".inline-error-text").forEach(el => el.remove());
-}
-
-// --- POPULAR SERVICES DYNAMIC MODALS ---
-const popularCards = document.querySelectorAll(".services-section .service-card");
-popularCards.forEach(card => {
-    const btn = card.querySelector("button");
-    const title = card.querySelector("h3").textContent;
-    if (btn) {
-        btn.onclick = async () => {
-            let cat = title === "DBMS Tutoring" ? "Tutoring" : (title === "Assignment Formatting" ? "Other" : title);
-            try {
-                const response = await fetch(`${API_BASE_URL}/providers?category=${encodeURIComponent(cat)}`);
-                if (!response.ok) throw new Error();
-                const list = await response.json();
-                openModal(title, list);
-            } catch (err) {
-                alert("Unable to fetch providers.");
-            }
-        };
-    }
-});
-
-function openModal(title, list) {
-    const backdrop = document.createElement("div");
-    backdrop.className = "modal-backdrop";
-
-    const content = document.createElement("div");
-    content.className = "modal-content";
-    content.innerHTML = `<h2>${title} Providers</h2><p>Verified campus partners available in your community.</p>`;
-
-    if (list.length === 0) {
-        content.innerHTML += `<p class="status-message">No verified campus providers currently listed.</p>`;
-    } else {
-        list.forEach(p => {
-            const div = document.createElement("div");
-            div.className = "provider-modal-item";
-            div.innerHTML = `
-                <h4>${p.name}</h4>
-                <p class="profile-offer-meta">${p.availability}</p>
-                <a class="provider-email-btn" href="mailto:${p.email}">Email ${p.name.split(" ")[0]}</a>
-            `;
-            content.appendChild(div);
-        });
-    }
-
-    const closeBtn = document.createElement("button");
-    closeBtn.className = "cancel-btn";
-    closeBtn.style.marginTop = "15px";
-    closeBtn.textContent = "Close";
-    closeBtn.onclick = () => backdrop.remove();
-    content.appendChild(closeBtn);
-
-    backdrop.appendChild(content);
-    document.body.appendChild(backdrop);
-}
-
-// --- AUTOCOMPLETE DEBOUNCED SEARCH ENGINE ---
-const searchInput = document.getElementById("search-input");
-const searchDropdown = document.getElementById("search-dropdown");
-if (searchInput && searchDropdown) {
-    let timer;
-    searchInput.oninput = () => {
-        clearTimeout(timer);
-        const query = searchInput.value.trim().toLowerCase();
-        timer = setTimeout(async () => {
-            if (query.length < 2) {
-                searchDropdown.classList.add("hidden");
-                return;
-            }
-            try {
-                const response = await fetch(`${API_BASE_URL}/requests`);
-                if (response.ok) {
-                    const list = await response.json();
-                    const filtered = list.filter(r => r.title.toLowerCase().includes(query) && r.status !== "Completed");
-                    renderSearchDropdown(filtered);
-                }
-            } catch (err) {
-                // Removed console.error debug logger statement to satisfy code requirements
-            }
-        }, 300);
-    };
-
-    function renderSearchDropdown(array) {
-        searchDropdown.textContent = "";
-        if (array.length === 0) {
-            const item = document.createElement("div");
-            item.className = "search-item-link search-no-results";
-            item.textContent = "No matching requests found.";
-            searchDropdown.appendChild(item);
-        } else {
-            array.forEach(item => {
-                const a = document.createElement("a");
-                a.className = "search-item-link";
-                a.href = `#request-details?id=${item.id}`;
-                a.textContent = item.title;
-                searchDropdown.appendChild(a);
-            });
-        }
-        searchDropdown.classList.remove("hidden");
-    }
-
-    document.addEventListener("click", (e) => {
-        if (!searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
-            searchDropdown.classList.add("hidden");
-        }
-    });
 }

@@ -1,5 +1,5 @@
-// 1. Global API Configuration
-const API_BASE_URL = "http://localhost:3000";
+// admin.js
+const API_BASE_URL = "http://127.0.0.1:8000/api";
 
 const requestsTableBody = document.getElementById("admin-requests-table");
 const providersTableBody = document.getElementById("admin-providers-table");
@@ -14,7 +14,35 @@ const providerForm = document.getElementById("provider-form");
 const toggleProviderBtn = document.getElementById("toggle-provider-btn");
 const cancelProviderBtn = document.getElementById("cancel-provider");
 
+function showNotification(message, type = "success") {
+    const container = document.getElementById("toast-container");
+    if (!container) return;
+
+    const toast = document.createElement("div");
+    toast.className = `toast toast-${type}`;
+    toast.textContent = message;
+    
+    container.appendChild(toast);
+    setTimeout(() => {
+        toast.classList.add("show");
+    }, 50);
+
+    setTimeout(() => {
+        toast.classList.remove("show");
+        setTimeout(() => toast.remove(), 400);
+    }, 4000);
+}
+
 document.addEventListener("DOMContentLoaded", () => {
+    // Basic protection (Checks standard user flag credentials)
+    const userSession = localStorage.getItem("currentUser");
+    const parsed = userSession ? JSON.parse(userSession) : null;
+    
+    if (!parsed) {
+        window.location.href = "index.html#login";
+        return;
+    }
+
     fetchAdminDashboardData();
 });
 
@@ -42,19 +70,19 @@ if (providerForm) {
         const newProvider = { name, email, category, availability };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/providers`, {
+            const response = await fetch(`${API_BASE_URL}/providers/`, {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newProvider)
             });
 
-            if (!response.ok) throw new Error();
-            alert("Verified Provider added successfully!");
+            if (!response.ok) throw new Error("Could not register verification provider data.");
+            showNotification("Verified Provider registered successfully!");
             providerForm.reset();
             providerFormContainer.classList.add("hidden");
             fetchAdminDashboardData();
         } catch (error) {
-            alert("Failed to save provider.");
+            showNotification(error.message, "error");
         }
     });
 }
@@ -66,12 +94,14 @@ async function fetchAdminDashboardData() {
 
     try {
         const [requestsRes, providersRes, bookingsRes] = await Promise.all([
-            fetch(`${API_BASE_URL}/requests`),
-            fetch(`${API_BASE_URL}/providers`),
-            fetch(`${API_BASE_URL}/bookings`)
+            fetch(`${API_BASE_URL}/requests/`),
+            fetch(`${API_BASE_URL}/providers/`),
+            fetch(`${API_BASE_URL}/bookings/`)
         ]);
 
-        if (!requestsRes.ok || !providersRes.ok || !bookingsRes.ok) throw new Error();
+        if (!requestsRes.ok || !providersRes.ok || !bookingsRes.ok) {
+            throw new Error("Unable to load administration data.");
+        }
 
         const requests = await requestsRes.json();
         const providers = await providersRes.json();
@@ -101,7 +131,6 @@ function calculateAdminStats(requests, bookings) {
     document.getElementById("stat-pending-approvals").textContent = pendingCount;
 }
 
-// --- TABLE 1: RENDERS REQUEST BOARD (Task 1 & 2 Completed) ---
 function renderRequestsTable(requestsArray) {
     requestsTableBody.textContent = "";
 
@@ -128,12 +157,10 @@ function renderRequestsTable(requestsArray) {
         tdBudget.textContent = `Rs. ${req.budget}`;
         tr.appendChild(tdBudget);
 
-        // Task 1: Added deadline text cell render
         const tdDeadline = document.createElement("td");
         tdDeadline.textContent = req.deadline;
         tr.appendChild(tdDeadline);
 
-        // Task 2: Calculate Expired Requests (Strict deadline math)
         const deadlineDate = new Date(req.deadline);
         deadlineDate.setHours(0,0,0,0);
         const isExpired = deadlineDate < today && req.status !== "Completed";
@@ -141,8 +168,8 @@ function renderRequestsTable(requestsArray) {
         const tdStatus = document.createElement("td");
         if (isExpired) {
             tdStatus.textContent = `${req.status} (Expired)`;
-            tdStatus.style.color = "#c0392b";
-            tdStatus.style.fontWeight = "bold";
+            tdStatus.style.color = "#ef4444";
+            tdStatus.style.fontWeight = "700";
         } else {
             tdStatus.textContent = req.status;
         }
@@ -217,15 +244,15 @@ function renderBookingsTable(bookingsArray) {
         const tr = document.createElement("tr");
 
         const tdTitle = document.createElement("td");
-        tdTitle.textContent = booking.requestTitle;
+        tdTitle.textContent = `Request ID: ${booking.request}`;
         tr.appendChild(tdTitle);
 
         const tdProvider = document.createElement("td");
-        tdProvider.textContent = booking.providerName;
+        tdProvider.textContent = `Helper ID: ${booking.provider}`;
         tr.appendChild(tdProvider);
 
         const tdClient = document.createElement("td");
-        tdClient.textContent = booking.clientName;
+        tdClient.textContent = "See Detail";
         tr.appendChild(tdClient);
 
         const tdMsg = document.createElement("td");
@@ -267,69 +294,66 @@ function renderBookingsTable(bookingsArray) {
     });
 }
 
-// --- DATABASE SYNCS (Updated with mandatory response.ok check validations) ---
 async function deleteRequest(id) {
     if (!confirm("Are you sure?")) return;
     try {
-        const response = await fetch(`${API_BASE_URL}/requests/${id}`, { method: "DELETE" });
+        const response = await fetch(`${API_BASE_URL}/requests/${id}/`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to delete.");
+        showNotification("Failed to delete.", "error");
     }
 }
 
 async function deleteProvider(id) {
     if (!confirm("Are you sure?")) return;
     try {
-        const response = await fetch(`${API_BASE_URL}/providers/${id}`, { method: "DELETE" });
+        const response = await fetch(`${API_BASE_URL}/providers/${id}/`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to delete.");
+        showNotification("Failed to delete.", "error");
     }
 }
 
 async function rejectBooking(id) {
     if (!confirm("Are you sure?")) return;
     try {
-        const response = await fetch(`${API_BASE_URL}/bookings/${id}`, { method: "DELETE" });
+        const response = await fetch(`${API_BASE_URL}/bookings/${id}/`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to reject.");
+        showNotification("Failed to reject.", "error");
     }
 }
 
 async function approveBookingMatch(id) {
     try {
-        const bookingRes = await fetch(`${API_BASE_URL}/bookings/${id}`);
-        // Ensure response is ok prior to converting content
+        const bookingRes = await fetch(`${API_BASE_URL}/bookings/${id}/`);
         if (!bookingRes.ok) throw new Error();
         const booking = await bookingRes.json();
 
-        const patchBookingRes = await fetch(`${API_BASE_URL}/bookings/${id}`, {
+        const patchBookingRes = await fetch(`${API_BASE_URL}/bookings/${id}/`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "Approved" })
         });
         if (!patchBookingRes.ok) throw new Error();
 
-        const patchReqRes = await fetch(`${API_BASE_URL}/requests/${booking.requestId}`, {
+        const patchReqRes = await fetch(`${API_BASE_URL}/requests/${booking.request}/`, {
             method: "PATCH",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "Completed" })
         });
         if (!patchReqRes.ok) throw new Error();
 
-        alert("Booking formally finalized!");
+        showNotification("Booking formally finalized!");
         fetchAdminDashboardData();
     } catch (err) {
-        alert("Failed to approve.");
+        showNotification("Failed to approve.", "error");
     }
 }
 
-// --- DYNAMIC REQUEST FORM MODIFICATIONS (PATCH Replacement) ---
 function loadRequestIntoEditForm(req) {
     editSection.classList.remove("hidden");
     document.getElementById("edit-id").value = req.id;
@@ -347,7 +371,6 @@ if (editForm) {
         e.preventDefault();
         const id = document.getElementById("edit-id").value;
 
-        // PATCH payload (Prevents resetting user fields like userId/userName)
         const updatedData = {
             title: document.getElementById("edit-title").value,
             description: document.getElementById("edit-description").value,
@@ -358,8 +381,7 @@ if (editForm) {
         };
 
         try {
-            // Task 3: Swapped PUT with PATCH to avoid deleting existing properties
-            const response = await fetch(`${API_BASE_URL}/requests/${id}`, {
+            const response = await fetch(`${API_BASE_URL}/requests/${id}/`, {
                 method: "PATCH",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedData)
@@ -369,7 +391,7 @@ if (editForm) {
             editSection.classList.add("hidden");
             fetchAdminDashboardData();
         } catch (err) {
-            alert("Failed to edit request.");
+            showNotification("Failed to edit request.", "error");
         }
     });
 }

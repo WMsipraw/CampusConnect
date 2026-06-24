@@ -8,6 +8,9 @@
 </head>
 <body>
 
+    <!-- Notification Engine Hook -->
+    <div id="toast-container"></div>
+
     <!-- 1. LANDING/LOGGED-OUT NAVBAR -->
     <header id="logged-out-header" class="nav-container">
         <nav class="navbar">
@@ -239,7 +242,7 @@
             </form>
         </section>
 
-        <!-- VIEW F: REQUEST DETAILS AND SEND OFFER (Persistent Back Button Layout) -->
+        <!-- VIEW F: REQUEST DETAILS AND SEND OFFER -->
         <section id="view-request-details" class="view-section register hidden">
             <main class="request-details-card card">
                 <h1 id="details-title">Loading Details...</h1>
@@ -252,7 +255,10 @@
                     <p><strong>Client:</strong> <span id="details-client"></span></p>
                 </div>
 
-                <section class="offer-form-section hidden">
+                <!-- Secure Dynamic Status Messages -->
+                <div id="details-security-notice" class="hidden"></div>
+
+                <section id="details-offer-section" class="offer-form-section hidden">
                     <h2>Send an Offer to Help</h2>
                     <form id="offer-form" class="fields">
                         <label for="offer-message">Your Proposal Message</label>

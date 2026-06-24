@@ -1,3 +1,4 @@
+<!-- admin.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -8,13 +9,16 @@
 </head>
 <body class="admin-page">
 
+    <!-- Toast Notification Engine -->
+    <div id="toast-container"></div>
+
     <nav class="navbar admin-navbar">
         <div class="logo">
             CampusConnect <span class="admin-badge">Admin</span>
         </div>
-        <!-- <ul class="nav-links">
-            <li><a href="index.html#home" class="register-btn">User View</a></li>
-        </ul> -->
+        <ul class="nav-links">
+            <li><a href="index.html#home" class="register-btn" style="background-color: #64748b !important;">Exit to User View</a></li>
+        </ul>
     </nav>
 
     <main class="admin-container">
@@ -34,7 +38,7 @@
             </div>
         </section>
 
-        <section id="edit-section" class="card admin-edit-card hidden" style="margin-bottom: 40px;">
+        <section id="edit-section" class="card admin-edit-card hidden" style="margin-bottom: 40px; max-width: 100%;">
             <h2>Edit Campus Request</h2>
             <form id="edit-form" class="fields">
                 <input type="hidden" id="edit-id">
@@ -43,7 +47,7 @@
                 <input type="text" id="edit-title" required placeholder="Enter request title">
                 
                 <label for="edit-description">Description</label>
-                <textarea id="edit-description" required placeholder="Describe what you want"></textarea>
+                <textarea id="edit-description" required placeholder="Describe what you want" style="height: 100px; resize: vertical;"></textarea>
                 
                 <label for="edit-category">Category</label>
                 <select id="edit-category">
@@ -88,7 +92,7 @@
                             <th>Title</th>
                             <th>Category</th>
                             <th>Budget</th>
-                            <th>Deadline</th> <!-- Task 1: Added Column Header -->
+                            <th>Deadline</th>
                             <th>Status</th>
                             <th>Actions</th>
                         </tr>
@@ -99,14 +103,14 @@
             </div>
         </section>
 
-        <!-- 2. MANAGE VERIFIED PROVIDERS (Relocated Add Button Control & Form to Top) -->
+        <!-- 2. MANAGE VERIFIED PROVIDERS -->
         <section class="admin-table-section" style="margin-top: 40px;">
-            <div class="table-header-flex" style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px;">
                 <h2>Manage Verified Providers</h2>
-                <button id="toggle-provider-btn" class="add-provider-trigger-btn" style="margin-bottom: 0;">+ Add Verified Provider</button>
+                <button id="toggle-provider-btn" class="add-provider-trigger-btn">+ Add Verified Provider</button>
             </div>
 
-            <section id="provider-form-container" class="card admin-edit-card hidden" style="margin-bottom: 40px; border: 1px solid #cbd5e1; box-shadow: none;">
+            <section id="provider-form-container" class="card admin-edit-card hidden" style="margin-bottom: 40px; border: 1px solid #cbd5e1; box-shadow: none; max-width: 100%;">
                 <h2>Add New Verified Campus Provider</h2>
                 <form id="provider-form" class="fields">
                     <label for="provider-name">Provider Full Name</label>
@@ -126,7 +130,7 @@
                     </select>
 
                     <label for="provider-avail">Availability & Short Description</label>
-                    <textarea id="provider-avail" required placeholder="Describe availability (e.g. 'Available Mon-Wed 10 AM - 4 PM')"></textarea>
+                    <textarea id="provider-avail" required placeholder="Describe availability (e.g. 'Available Mon-Wed 10 AM - 4 PM')" style="height: 80px; resize: vertical;"></textarea>
 
                     <div class="form-actions">
                         <button type="submit" class="save-btn">Add Provider</button>
@@ -166,7 +170,7 @@
                     <thead>
                         <tr>
                             <th>Request Title</th>
-                            <th>Helper (Provider)</th>
+                            <th>Helper</th>
                             <th>Client</th>
                             <th>Message</th>
                             <th>Status</th>
