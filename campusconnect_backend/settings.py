@@ -24,14 +24,15 @@ ALLOWED_HOSTS = ['127.0.0.1', 'localhost']
 INSTALLED_APPS = [
     'django.contrib.admin',
     'django.contrib.auth',
-    'django.contenttypes',
-    'django.sessions',
-    'django.messages',
-    'django.staticfiles',
+    'django.contrib.contenttypes',
+    'django.contrib.sessions',
+    'django.contrib.messages',
+    'django.contrib.staticfiles',
     
     # --- CAMPUSCONNECT API ---
     'corsheaders',       
     'rest_framework',    
+    'rest_framework.authtoken', # Enforces backend token tables
     'core',              
 ]
 
@@ -129,5 +130,36 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:5500",
 ]
 
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization", # Essential to permit Token Authorization headers over cross-origins
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+]
+
 # Tell Django to utilize our custom core User table containing university ID details
 AUTH_USER_MODEL = 'core.User'
+
+# --- REST FRAMEWORK SECURITY HARDENING ---
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.TokenAuthentication',
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.IsAuthenticated', # Enforce authentication across the board by default
+    ],
+}
+
+# campusconnect_backend/settings.py
+
+# ... other settings ...
+
+AUTHENTICATION_BACKENDS = [
+    'django.contrib.auth.backends.ModelBackend',
+    'core.backends.EmailBackend',
+]

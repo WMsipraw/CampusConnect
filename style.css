@@ -1,3 +1,8 @@
+/* style.css */
+html {
+    scroll-behavior: smooth !important;
+}
+
 *, *:before, *:after {
     box-sizing: border-box !important;
 }
@@ -1466,4 +1471,17 @@ select:focus {
     margin-bottom: 12px;
     border: 1px solid #f5b7b1;
     width: fit-content;
+}
+
+/* --- SECURE BANNER HIGHLIGHT --- */
+.secure-banner {
+    background-color: #fee2e2 !important;
+    color: #991b1b !important;
+    border: 1px solid #fca5a5 !important;
+    padding: 15px !important;
+    border-radius: 8px !important;
+    margin-bottom: 20px !important;
+    font-size: 15px !important;
+    font-weight: 500 !important;
+    text-align: center !important;
 }

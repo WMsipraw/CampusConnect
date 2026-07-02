@@ -14,6 +14,27 @@ const providerForm = document.getElementById("provider-form");
 const toggleProviderBtn = document.getElementById("toggle-provider-btn");
 const cancelProviderBtn = document.getElementById("cancel-provider");
 
+// Unified Secure Fetch Wrapper
+async function secureFetch(url, options = {}) {
+    const session = localStorage.getItem("currentUser");
+    const parsed = session ? JSON.parse(session) : null;
+    
+    if (!options.headers) {
+        options.headers = {};
+    }
+    
+    if (options.body && !options.headers["Content-Type"]) {
+        options.headers["Content-Type"] = "application/json";
+    }
+    
+    // Inject token key into Request headers
+    if (parsed && parsed.token) {
+        options.headers["Authorization"] = `Token ${parsed.token}`;
+    }
+    
+    return fetch(url, options);
+}
+
 function showNotification(message, type = "success") {
     const container = document.getElementById("toast-container");
     if (!container) return;
@@ -38,7 +59,8 @@ document.addEventListener("DOMContentLoaded", () => {
     const userSession = localStorage.getItem("currentUser");
     const parsed = userSession ? JSON.parse(userSession) : null;
     
-    if (!parsed) {
+    // STRICT SECURITY SHIELD: Redirect non-admins out of administration panel immediately
+    if (!parsed || !parsed.isAdmin) {
         window.location.href = "index.html#login";
         return;
     }
@@ -70,9 +92,8 @@ if (providerForm) {
         const newProvider = { name, email, category, availability };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/providers/`, {
+            const response = await secureFetch(`${API_BASE_URL}/providers/`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newProvider)
             });
 
@@ -94,9 +115,9 @@ async function fetchAdminDashboardData() {
 
     try {
         const [requestsRes, providersRes, bookingsRes] = await Promise.all([
-            fetch(`${API_BASE_URL}/requests/`),
-            fetch(`${API_BASE_URL}/providers/`),
-            fetch(`${API_BASE_URL}/bookings/`)
+            secureFetch(`${API_BASE_URL}/requests/`),
+            secureFetch(`${API_BASE_URL}/providers/`),
+            secureFetch(`${API_BASE_URL}/bookings/`)
         ]);
 
         if (!requestsRes.ok || !providersRes.ok || !bookingsRes.ok) {
@@ -297,7 +318,7 @@ function renderBookingsTable(bookingsArray) {
 async function deleteRequest(id) {
     if (!confirm("Are you sure?")) return;
     try {
-        const response = await fetch(`${API_BASE_URL}/requests/${id}/`, { method: "DELETE" });
+        const response = await secureFetch(`${API_BASE_URL}/requests/${id}/`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
@@ -308,7 +329,7 @@ async function deleteRequest(id) {
 async function deleteProvider(id) {
     if (!confirm("Are you sure?")) return;
     try {
-        const response = await fetch(`${API_BASE_URL}/providers/${id}/`, { method: "DELETE" });
+        const response = await secureFetch(`${API_BASE_URL}/providers/${id}/`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
@@ -319,7 +340,7 @@ async function deleteProvider(id) {
 async function rejectBooking(id) {
     if (!confirm("Are you sure?")) return;
     try {
-        const response = await fetch(`${API_BASE_URL}/bookings/${id}/`, { method: "DELETE" });
+        const response = await secureFetch(`${API_BASE_URL}/bookings/${id}/`, { method: "DELETE" });
         if (!response.ok) throw new Error();
         fetchAdminDashboardData();
     } catch (err) {
@@ -329,20 +350,18 @@ async function rejectBooking(id) {
 
 async function approveBookingMatch(id) {
     try {
-        const bookingRes = await fetch(`${API_BASE_URL}/bookings/${id}/`);
+        const bookingRes = await secureFetch(`${API_BASE_URL}/bookings/${id}/`);
         if (!bookingRes.ok) throw new Error();
         const booking = await bookingRes.json();
 
-        const patchBookingRes = await fetch(`${API_BASE_URL}/bookings/${id}/`, {
+        const patchBookingRes = await secureFetch(`${API_BASE_URL}/bookings/${id}/`, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "Approved" })
         });
         if (!patchBookingRes.ok) throw new Error();
 
-        const patchReqRes = await fetch(`${API_BASE_URL}/requests/${booking.request}/`, {
+        const patchReqRes = await secureFetch(`${API_BASE_URL}/requests/${booking.request}/`, {
             method: "PATCH",
-            headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ status: "Completed" })
         });
         if (!patchReqRes.ok) throw new Error();
@@ -381,9 +400,8 @@ if (editForm) {
         };
 
         try {
-            const response = await fetch(`${API_BASE_URL}/requests/${id}/`, {
+            const response = await secureFetch(`${API_BASE_URL}/requests/${id}/`, {
                 method: "PATCH",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(updatedData)
             });
 

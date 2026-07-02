@@ -5,6 +5,30 @@ const logoutBtns = document.querySelectorAll(".logout-btn");
 const searchInput = document.getElementById("search-input");
 const searchDropdown = document.getElementById("search-dropdown");
 
+// app.js (Updated secureFetch)
+async function secureFetch(url, options = {}) {
+    const session = localStorage.getItem("currentUser");
+    const parsed = session ? JSON.parse(session) : null;
+    
+    if (!options.headers) {
+        options.headers = {};
+    }
+    
+    if (options.body && !options.headers["Content-Type"]) {
+        options.headers["Content-Type"] = "application/json";
+    }
+    
+    // Check if the target is a public route
+    const isPublicRoute = url.includes("/login/") || url.includes("/register/");
+    
+    // Only inject token key into Request headers if NOT on public registration/login endpoints
+    if (parsed && parsed.token && !isPublicRoute) {
+        options.headers["Authorization"] = `Token ${parsed.token}`;
+    }
+    
+    return fetch(url, options);
+}
+
 // Custom Professional Notification Engine
 function showNotification(message, type = "success") {
     const container = document.getElementById("toast-container");
@@ -16,12 +40,10 @@ function showNotification(message, type = "success") {
     
     container.appendChild(toast);
     
-    // Smooth insertion transitions
     setTimeout(() => {
         toast.classList.add("show");
     }, 50);
 
-    // Fade out and release resources
     setTimeout(() => {
         toast.classList.remove("show");
         setTimeout(() => toast.remove(), 400);
@@ -41,8 +63,11 @@ window.addEventListener("hashchange", routeSPA);
 document.addEventListener("DOMContentLoaded", () => {
     routeSPA();
     setupGlobalEventListeners();
+    setupServiceCardContacts();
+    setupLiveSearch();
 });
 
+// app.js (Updated routeSPA)
 async function routeSPA() {
     const hash = window.location.hash || "#landing";
     
@@ -74,15 +99,30 @@ async function routeSPA() {
         return;
     }
 
+    // Fast-track logged-in sessions to Home away from Landing page
+    if (parsedSession && (hash === "#landing" || hash === "" || hash === "#login" || hash === "#register")) {
+        window.location.hash = "#home";
+        return;
+    }
+
     // SPA routing engine
-    if (hash === "#landing") {
+    if (hash === "#landing" || hash === "#categories" || hash === "#how-it-works") {
         document.getElementById("view-landing").classList.remove("hidden");
+        if (hash !== "#landing") {
+            const targetId = hash.substring(1);
+            const targetEl = document.getElementById(targetId);
+            if (targetEl) {
+                setTimeout(() => {
+                    targetEl.scrollIntoView({ behavior: "smooth" });
+                }, 100); // 100ms delay lets browser paint layout
+            }
+        }
     } else if (hash === "#login") {
-        if (parsedSession) { window.location.hash = "#home"; return; }
         document.getElementById("view-login").classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" }); // Ensure user is scrolled to form on transition
     } else if (hash === "#register") {
-        if (parsedSession) { window.location.hash = "#home"; return; }
         document.getElementById("view-register").classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" }); // Ensure user is scrolled to form on transition
     } else if (hash.startsWith("#home")) {
         document.getElementById("view-home").classList.remove("hidden");
         
@@ -92,28 +132,33 @@ async function routeSPA() {
             setupRequestsControls();
         }
 
-        // Scroll controllers
-        if (hash === "#home-services") {
-            const el = document.querySelector(".services-section");
-            if (el) el.scrollIntoView({ behavior: "smooth" });
-        } else if (hash === "#home-requests") {
-            const el = document.querySelector(".requests-section");
-            if (el) el.scrollIntoView({ behavior: "smooth" });
-        } else if (hash === "#home-about") {
-            const el = document.querySelector("footer");
-            if (el) el.scrollIntoView({ behavior: "smooth" });
-        } else {
-            window.scrollTo({ top: 0, behavior: "smooth" });
-        }
+        // Layout-paint delay to ensure smooth scrolling and accurate destination coordinates
+        setTimeout(() => {
+            if (hash === "#home-services") {
+                const el = document.querySelector(".services-section");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+            } else if (hash === "#home-requests") {
+                const el = document.querySelector(".requests-section");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+            } else if (hash === "#home-about") {
+                const el = document.querySelector("footer");
+                if (el) el.scrollIntoView({ behavior: "smooth" });
+            } else {
+                window.scrollTo({ top: 0, behavior: "smooth" });
+            }
+        }, 100);
     } else if (hash === "#create-request") {
         document.getElementById("view-create-request").classList.remove("hidden");
+        window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (hash.startsWith("#request-details")) {
         document.getElementById("view-request-details").classList.remove("hidden");
         const params = new URLSearchParams(hash.split("?")[1]);
         fetchRequestDetails(params.get("id"));
+        window.scrollTo({ top: 0, behavior: "smooth" });
     } else if (hash === "#profile") {
         document.getElementById("view-profile").classList.remove("hidden");
         loadProfileData();
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }
 }
 
@@ -132,7 +177,7 @@ function setupGlobalEventListeners() {
             const confirmPassword = document.getElementById("register-confirm_password").value;
 
             let isValid = true;
-            
+        
             const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
             if (!emailRegex.test(email)) {
                 showInlineError("register-email", "Please enter a valid email structure.");
@@ -152,31 +197,29 @@ function setupGlobalEventListeners() {
             const newUser = { fullname, email, university_id: universityId, password, username: email };
 
             try {
-                // Register directly with the secure backend endpoint
-                const response = await fetch(`${API_BASE_URL}/register/`, {
+                const response = await secureFetch(`${API_BASE_URL}/register/`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(newUser)
                 });
 
-                // Secure & Clean Error Handling block
                 if (!response.ok) {
-                    try {
-                        const errorDetails = await response.json();
-                        if (errorDetails.email) {
-                            showInlineError("register-email", "This email is already registered.");
-                        } else {
-                            throw new Error("Registration failed.");
-                        }
-                    } catch (jsonErr) {
-                        // Safely catches HTML error pages from Django and alerts the user cleanly
-                        throw new Error("Server error occurred during registration. Please verify Command Prompt logs.");
+                    const errorDetails = await response.json().catch(() => ({}));
+                    if (errorDetails.email) {
+                        showInlineError("register-email", "This email is already registered.");
+                    } else if (errorDetails.university_id) {
+                        showInlineError("register-university_id", "This University ID is already registered.");
+                    } else if (errorDetails.username) {
+                        showInlineError("register-email", "This email/username is already in use.");
+                    } else {
+                        const firstError = Object.values(errorDetails).flat()[0];
+                        showNotification(firstError || "Registration failed. Please try again.", "error");
                     }
                     return;
                 }
-                
+            
                 showNotification("Registration successful! Please log in.");
-                window.location.hash = "#login";
+                registerForm.reset(); 
+                window.location.hash = "#login"; 
             } catch (err) {
                 showNotification(err.message, "error");
             }
@@ -193,14 +236,15 @@ function setupGlobalEventListeners() {
             const password = document.getElementById("login-password").value;
 
             try {
-                const response = await fetch(`${API_BASE_URL}/login/`, {
+                const response = await secureFetch(`${API_BASE_URL}/login/`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ email, password })
                 });
 
                 if (!response.ok) {
-                    showNotification("Invalid credentials entered.", "error");
+                    const errorDetails = await response.json().catch(() => ({}));
+                    const msg = errorDetails.error || "Invalid credentials entered.";
+                    showNotification(msg, "error");
                     return;
                 }
 
@@ -253,14 +297,13 @@ function setupGlobalEventListeners() {
             const user = JSON.parse(localStorage.getItem("currentUser"));
             const payload = {
                 title, description, category, deadline, budget,
-                client: user.id, // Linked securely as ForeignKey in DB
+                client: user.id,
                 status: "Open"
             };
 
             try {
-                const response = await fetch(`${API_BASE_URL}/requests/`, {
+                const response = await secureFetch(`${API_BASE_URL}/requests/`, {
                     method: "POST",
-                    headers: { "Content-Type": "application/json" },
                     body: JSON.stringify(payload)
                 });
                 if (!response.ok) throw new Error("Could not submit requested post.");
@@ -273,6 +316,13 @@ function setupGlobalEventListeners() {
             }
         });
     }
+
+    const exploreBtn = document.querySelector(".explore-btn");
+    if (exploreBtn) {
+        exploreBtn.addEventListener("click", () => {
+            window.location.hash = "#home-services";
+        });
+    }
 }
 
 // --- ACTIVE REQUESTS BOARD ENGINE ---
@@ -282,7 +332,7 @@ async function fetchActiveRequests() {
     list.innerHTML = `<div class="status-message">Loading active board requests...</div>`;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/requests/`);
+        const response = await secureFetch(`${API_BASE_URL}/requests/`);
         if (!response.ok) throw new Error("Database transit fault.");
         const raw = await response.json();
 
@@ -418,7 +468,7 @@ async function fetchRequestDetails(id) {
     noticeSec.textContent = "";
 
     try {
-        const response = await fetch(`${API_BASE_URL}/requests/${id}/`);
+        const response = await secureFetch(`${API_BASE_URL}/requests/${id}/`);
         if (!response.ok) throw new Error("The requested post cannot be resolved.");
         loadedRequest = await response.json();
 
@@ -434,15 +484,17 @@ async function fetchRequestDetails(id) {
             if (currentUser.id === loadedRequest.client) {
                 noticeSec.className = "secure-banner";
                 noticeSec.textContent = "You posted this request. Track bids inside your Profile dashboard.";
+                noticeSec.classList.remove("hidden");
                 return;
             }
 
-            const bookingCheck = await fetch(`${API_BASE_URL}/bookings/?request=${id}&provider=${currentUser.id}`);
+            const bookingCheck = await secureFetch(`${API_BASE_URL}/bookings/?request=${id}&provider=${currentUser.id}`);
             if (bookingCheck.ok) {
                 const existing = await bookingCheck.json();
                 if (existing.length > 0) {
                     noticeSec.className = "secure-banner";
                     noticeSec.textContent = "You have already submitted an active offer for this request.";
+                    noticeSec.classList.remove("hidden");
                     return;
                 }
             }
@@ -474,12 +526,14 @@ if (offerForm) {
         };
 
         try {
-            const res = await fetch(`${API_BASE_URL}/bookings/`, {
+            const res = await secureFetch(`${API_BASE_URL}/bookings/`, {
                 method: "POST",
-                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(payload)
             });
-            if (!res.ok) throw new Error("Booking registration failed.");
+            if (!res.ok) {
+                const errData = await res.json().catch(() => ({}));
+                throw new Error(errData.error || "Booking registration failed.");
+            }
             
             showNotification("Your proposal has been securely delivered to the client!");
             offerForm.reset();
@@ -504,12 +558,11 @@ async function loadProfileData() {
     list.innerHTML = `<div class="status-message">Loading received bookings...</div>`;
 
     try {
-        const response = await fetch(`${API_BASE_URL}/bookings/`);
+        const response = await secureFetch(`${API_BASE_URL}/bookings/`);
         if (!response.ok) throw new Error("Inbound request query failed.");
         const bookings = await response.json();
         
-        // Filter bookings belonging to requests created by the current user
-        const userRequestsRes = await fetch(`${API_BASE_URL}/requests/?client=${user.id}`);
+        const userRequestsRes = await secureFetch(`${API_BASE_URL}/requests/?client=${user.id}`);
         const userRequests = await userRequestsRes.json();
         const userRequestIds = userRequests.map(r => r.id);
 
@@ -555,9 +608,8 @@ function renderProfileReceivedBookings(array) {
             btn.textContent = "Accept Offer";
             btn.onclick = async () => {
                 try {
-                    const res = await fetch(`${API_BASE_URL}/bookings/${offer.id}`, {
+                    const res = await secureFetch(`${API_BASE_URL}/bookings/${offer.id}/`, {
                         method: "PATCH",
-                        headers: { "Content-Type": "application/json" },
                         body: JSON.stringify({ status: "Accepted by Client, Pending Admin Approval" })
                     });
                     if (!res.ok) throw new Error("Acceptance protocol synchronization failed.");
@@ -589,4 +641,180 @@ function showInlineError(id, msg) {
 
 function clearInlineErrors() {
     document.querySelectorAll(".inline-error-text").forEach(el => el.remove());
+}
+
+// --- Dynamic Verified Campus Providers System ---
+function setupServiceCardContacts() {
+    const cards = document.querySelectorAll(".services-grid .service-card");
+    cards.forEach(card => {
+        const titleEl = card.querySelector("h3");
+        const buttonEl = card.querySelector("button");
+        if (!titleEl || !buttonEl) return;
+
+        const titleText = titleEl.textContent.trim();
+        let category = "Other";
+        if (titleText.includes("Tutoring")) category = "Tutoring";
+        else if (titleText.includes("Programming")) category = "Programming Help";
+        else if (titleText.includes("Repair")) category = "Laptop Repair";
+        else if (titleText.includes("Photography")) category = "Photography";
+        else if (titleText.includes("Design")) category = "Graphic Design";
+        else if (titleText.includes("Formatting")) category = "Other";
+
+        buttonEl.addEventListener("click", () => {
+            fetchVerifiedProviders(category, titleText);
+        });
+    });
+}
+
+async function fetchVerifiedProviders(category, serviceTitle) {
+    try {
+        const response = await secureFetch(`${API_BASE_URL}/providers/?category=${category}`);
+        if (!response.ok) throw new Error("Could not fetch verified providers.");
+        const providers = await response.json();
+
+        showProviderModal(providers, serviceTitle);
+    } catch (err) {
+        showNotification("Failed to fetch verified providers.", "error");
+    }
+}
+
+function showProviderModal(providers, serviceTitle) {
+    const oldModal = document.getElementById("provider-modal");
+    if (oldModal) oldModal.remove();
+
+    const backdrop = document.createElement("div");
+    backdrop.id = "provider-modal";
+    backdrop.className = "modal-backdrop";
+
+    const content = document.createElement("div");
+    content.className = "modal-content";
+
+    const h2 = document.createElement("h2");
+    h2.textContent = `Verified Providers: ${serviceTitle}`;
+    content.appendChild(h2);
+
+    const pDesc = document.createElement("p");
+    
+    if (providers.length === 0) {
+        pDesc.textContent = "No verified providers are currently listed for this category. Check back later or post an active request!";
+        content.appendChild(pDesc);
+    } else {
+        pDesc.textContent = "Connect with these campus-verified experts directly:";
+        content.appendChild(pDesc);
+
+        const listContainer = document.createElement("div");
+        listContainer.style.maxHeight = "300px";
+        listContainer.style.overflowY = "auto";
+        listContainer.style.marginBottom = "20px";
+
+        providers.forEach(prov => {
+            const item = document.createElement("div");
+            item.className = "provider-modal-item";
+            item.innerHTML = `
+                <h4>${sanitize(prov.name)}</h4>
+                <p style="margin: 3px 0; font-size: 13px;"><strong>Expertise:</strong> ${sanitize(prov.category)}</p>
+                <p style="margin: 3px 0; font-size: 13px;"><strong>Availability:</strong> ${sanitize(prov.availability)}</p>
+                <a href="mailto:${sanitize(prov.email)}" class="provider-email-btn">Email: ${sanitize(prov.email)}</a>
+            `;
+            listContainer.appendChild(item);
+        });
+        content.appendChild(listContainer);
+    }
+
+    const closeBtn = document.createElement("button");
+    closeBtn.className = "cancel-btn";
+    closeBtn.style.width = "100%";
+    closeBtn.textContent = "Close";
+    closeBtn.onclick = () => backdrop.remove();
+    content.appendChild(closeBtn);
+
+    backdrop.appendChild(content);
+    document.body.appendChild(backdrop);
+
+    backdrop.addEventListener("click", (e) => {
+        if (e.target === backdrop) backdrop.remove();
+    });
+}
+
+// --- CASE-INSENSITIVE, DETAILED LIVE SEARCH ENGINE ---
+function setupLiveSearch() {
+    if (!searchInput || !searchDropdown) return;
+
+    searchInput.addEventListener("input", async () => {
+        const query = searchInput.value.trim().toLowerCase();
+        if (!query) {
+            searchDropdown.classList.add("hidden");
+            searchDropdown.innerHTML = "";
+            return;
+        }
+
+        try {
+            const response = await secureFetch(`${API_BASE_URL}/requests/`);
+            if (!response.ok) throw new Error();
+            const raw = await response.json();
+
+            const today = new Date();
+            today.setHours(0,0,0,0);
+
+            const matches = raw.filter(req => {
+                const isCompleted = req.status === "Completed";
+                const deadlineDate = new Date(req.deadline);
+                deadlineDate.setHours(0,0,0,0);
+                const isExpired = deadlineDate < today;
+
+                const queryMatch = req.title.toLowerCase().includes(query) || 
+                                   req.description.toLowerCase().includes(query);
+
+                return !isCompleted && !isExpired && queryMatch;
+            });
+
+            renderSearchDropdown(matches);
+        } catch (err) {
+            console.error("Search failure:", err);
+        }
+    });
+
+    document.addEventListener("click", (e) => {
+        if (searchInput && !searchInput.contains(e.target) && !searchDropdown.contains(e.target)) {
+            searchDropdown.classList.add("hidden");
+        }
+    });
+}
+
+function renderSearchDropdown(matches) {
+    searchDropdown.innerHTML = "";
+    if (matches.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "search-item-link search-no-results";
+        empty.textContent = "No matching requests found.";
+        searchDropdown.appendChild(empty);
+        searchDropdown.classList.remove("hidden");
+        return;
+    }
+
+    matches.slice(0, 5).forEach(req => {
+        const a = document.createElement("a");
+        a.className = "search-item-link";
+        a.href = `#request-details?id=${req.id}`;
+        
+        const titleSpan = document.createElement("strong");
+        titleSpan.textContent = req.title;
+        a.appendChild(titleSpan);
+
+        const detailsSpan = document.createElement("div");
+        detailsSpan.style.fontSize = "12px";
+        detailsSpan.style.color = "#64748b";
+        detailsSpan.style.marginTop = "3px";
+        detailsSpan.textContent = `${req.category} | Rs. ${req.budget} | Client: ${req.userName}`;
+        a.appendChild(detailsSpan);
+
+        a.addEventListener("click", () => {
+            searchDropdown.classList.add("hidden");
+            searchInput.value = "";
+        });
+
+        searchDropdown.appendChild(a);
+    });
+
+    searchDropdown.classList.remove("hidden");
 }

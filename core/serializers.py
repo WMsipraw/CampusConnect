@@ -5,17 +5,25 @@ from .models import User, Request, Booking, Provider
 class UserSerializer(serializers.ModelSerializer):
     class Meta:
         model = User
-        fields = ['id', 'fullname', 'email', 'university_id', 'password']
-        extra_kwargs = {'password': {'write_only': True}} # Protects passwords from being sent in API responses
+        fields = ['id', 'fullname', 'email', 'university_id', 'password', 'username']
+        extra_kwargs = {
+            'password': {'write_only': True},
+            'username': {'required': False}
+        }
 
     def create(self, validated_data):
-        # Securely hash the password instead of storing it in plain text
+        password = validated_data.pop('password')
+        email = validated_data.get('email')
+        fullname = validated_data.get('fullname')
+        university_id = validated_data.get('university_id')
+        
+        # Explicitly pass required arguments to avoid keyword conflicts
         user = User.objects.create_user(
-            email=validated_data['email'],
-            username=validated_data['email'], # Use email as username
-            fullname=validated_data['fullname'],
-            university_id=validated_data['university_id'],
-            password=validated_data['password']
+            username=email,
+            email=email,
+            password=password,
+            fullname=fullname,
+            university_id=university_id
         )
         return user
 

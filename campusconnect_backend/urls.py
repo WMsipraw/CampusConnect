@@ -8,11 +8,11 @@ from core.views import RegisterView, LoginView, RequestViewSet, BookingViewSet, 
 router = DefaultRouter()
 router.register(r'requests', RequestViewSet, basename='request')
 router.register(r'bookings', BookingViewSet, basename='booking')
-router.register(r'providers', ProviderViewSet, basename='provider') # <-- ENSURE THIS IS REGISTERED
+router.register(r'providers', ProviderViewSet, basename='provider')
 
 urlpatterns = [
-    path('admin/', admin.site.admin_view), # Django secure admin panel
+    path('admin/', admin.site.urls),  # Django secure standard admin site URLs
     path('api/register/', RegisterView.as_view(), name='register'),
     path('api/login/', LoginView.as_view(), name='login'),
-    path('api/', include(router.urls)), # Combines standard requests, bookings, and providers routes
+    path('api/', include(router.urls)),
 ]
